@@ -22,6 +22,11 @@ env/
 local_settings.py  # local specific settings
 media/             # User-uploaded files (usually handled by cloud storage in prod)
 static_root/       # Collected static files
+staticfiles/       # Collected static files (managed by collectstatic)
+
+# Environment variables
+.env
+
 
 # Operating System files
 .DS_Store
