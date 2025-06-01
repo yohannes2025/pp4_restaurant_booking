@@ -9,6 +9,7 @@
         body { font-family: sans-serif; background-color: #f8f9fa; }
         .navbar { margin-bottom: 20px; }
         .container { padding-top: 20px; padding-bottom: 20px; }
+        
         .messages { list-style: none; padding: 0; }
         .messages li { margin-bottom: 10px; }
     </style>
@@ -22,7 +23,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    {# Links will be added here later #}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'check_availability' %}">Check Availability</a> {# NEW LINK #}
+                    </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'make_booking' %}">Make a Booking</a>
