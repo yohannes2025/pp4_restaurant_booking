@@ -144,6 +144,7 @@ USE_TZ = True   # Enable timezone support
 STATIC_URL = 'static/'
 # Directory where collectstatic will put files
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [BASE_DIR / "static"]
 
 # Media files (user uploads)
 MEDIA_URL = '/media/'
