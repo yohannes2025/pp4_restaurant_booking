@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.auth.models import User  # Import User model
+from datetime import date, time  # Import for potential future use in model methods
 
 
 class Table(models.Model):
@@ -9,3 +11,41 @@ class Table(models.Model):
 
     def __str__(self):
         return f"Table {self.number} (Capacity: {self.capacity})"
+    
+
+class Booking(models.Model):
+    """Represents a table reservation."""
+    BOOKING_STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('confirmed', 'Confirmed'),
+        ('cancelled', 'Cancelled'),
+        ('completed', 'Completed'),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='bookings', help_text="The user who made the booking.")
+    table = models.ForeignKey(Table, on_delete=models.PROTECT, related_name='bookings',
+                              help_text="The table reserved. PROTECT prevents deleting a table with active bookings.")
+    booking_date = models.DateField(help_text="The date of the reservation.")
+    booking_time = models.TimeField(help_text="The time of the reservation.")
+    number_of_guests = models.IntegerField(
+        help_text="The number of guests for this reservation.")
+    notes = models.TextField(
+        blank=True, null=True, help_text="Any special requests or notes from the customer.")
+    status = models.CharField(max_length=20, choices=BOOKING_STATUS_CHOICES,
+                              default='pending', help_text="Current status of the booking.")
+    created_at = models.DateTimeField(
+        auto_now_add=True, help_text="Timestamp when the booking was created.")
+    updated_at = models.DateTimeField(
+        # Added for tracking changes
+        auto_now=True, help_text="Timestamp when the booking was last updated.")
+
+    class Meta:
+        # Ensures that a specific table cannot be booked for the exact same date and time.
+        # This prevents double-booking a table.
+        unique_together = ('table', 'booking_date', 'booking_time')
+        # Default ordering for queries
+        ordering = ['booking_date', 'booking_time']
+
+    def __str__(self):
+        return f"Booking by {self.user.username} for Table {self.table.number} on {self.booking_date} at {self.booking_time} ({self.status})"
