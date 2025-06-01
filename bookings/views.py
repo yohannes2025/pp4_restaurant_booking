@@ -96,11 +96,31 @@ def my_bookings(request):
     return render(request, 'bookings/my_bookings.html', context)
 
 
-
 @login_required
 def cancel_booking(request, booking_id):
-    """Placeholder for cancelling a booking."""
-    return render(request, 'bookings/my_bookings.html')
+    """Allow a user to cancel their booking."""
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+
+    # Prevent cancellation if the booking is too close to the time (e.g., within 2 hours)
+    booking_datetime_naive = datetime.combine(
+        booking.booking_date, booking.booking_time)
+    booking_datetime = timezone.make_aware(
+        booking_datetime_naive)  # Ensure timezone awareness
+
+    if booking_datetime < timezone.now() + timedelta(hours=2):
+        messages.error(
+            request, "Bookings cannot be cancelled within 2 hours of the reservation time.")
+    # Prevent cancelling already finalized bookings
+    elif booking.status in ['cancelled', 'completed', 'no-show']:
+        messages.warning(
+            request, f"This booking is already {booking.get_status_display()}. Cannot cancel.")
+    else:
+        booking.status = 'cancelled'  # Soft delete: set status to cancelled
+        booking.save()
+        messages.success(
+            request, "Your booking has been successfully cancelled.")
+
+    return redirect('my_bookings')
 
 
 def check_availability(request):
