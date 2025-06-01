@@ -25,13 +25,18 @@ def make_booking(request):
             booking_time = form.cleaned_data['booking_time']
             number_of_guests = form.cleaned_data['number_of_guests']
 
-            # Combine date and time for comparison
-            booking_datetime = datetime.combine(booking_date, booking_time)
+            # Make booking_datetime timezone-aware for comparison
+
+            booking_datetime_naive = datetime.combine(
+                booking_date, booking_time)
+
+            booking_datetime = timezone.make_aware(
+                booking_datetime_naive)  # FIX: Make aware
 
             # Basic check to prevent past bookings
-            if booking_datetime < timezone.now():
+            if booking_datetime < timezone.now() - timedelta(minutes=1):  # Allow current minute
                 messages.error(
-                    request, "You cannot make a booking in the past.")
+                    request, "Booking date and time cannot be in the past.")
                 return render(request, 'bookings/make_booking.html', {'form': form})
 
             # Find tables already booked at the exact date and time            
