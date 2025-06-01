@@ -24,6 +24,8 @@ from django.conf.urls.static import static  # Import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('bookings.urls')),  # Include bookings app URLs
+    # Django's authentication URLs
+    path('accounts/', include('django.contrib.auth.urls')),
 ]
 
 # Serve static and media files in development
