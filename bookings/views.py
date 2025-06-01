@@ -6,7 +6,7 @@ from django.utils import timezone
 from datetime import datetime, timedelta, date, time
 
 from .models import Booking, Table
-from .forms import BookingForm, AvailabilityForm  # Import AvailabilityForm
+from .forms import BookingForm, AvailabilityForm
 
 
 def home_view(request):
@@ -33,10 +33,12 @@ def make_booking(request):
                     request, "Booking date and time cannot be in the past.")
                 return render(request, 'bookings/make_booking.html', {'form': form})
 
+            # Find tables already booked at the exact date and time, excluding cancelled ones (FIX)
             booked_tables_ids = Booking.objects.filter(
                 booking_date=booking_date,
                 booking_time=booking_time
-            ).values_list('table__id', flat=True)
+                # FIX: Exclude cancelled
+            ).exclude(status='cancelled').values_list('table__id', flat=True)
 
             available_tables = Table.objects.filter(
                 capacity__gte=number_of_guests
@@ -81,7 +83,7 @@ def cancel_booking(request, booking_id):
 
 def check_availability(request):
     """View to check table availability based on date, time, and guests."""
-    available_tables = []  # Initialize empty list for tables
+    available_tables = []
     if request.method == 'POST':
         form = AvailabilityForm(request.POST)
         if form.is_valid():
@@ -89,11 +91,12 @@ def check_availability(request):
             check_time = form.cleaned_data['check_time']
             num_guests = form.cleaned_data['num_guests']
 
-            # Find tables already booked at the exact date and time
+            # Find tables already booked at the exact date and time, excluding cancelled ones (FIX)
             booked_tables_ids = Booking.objects.filter(
                 booking_date=check_date,
                 booking_time=check_time
-            ).values_list('table__id', flat=True)
+                # FIX: Exclude cancelled
+            ).exclude(status='cancelled').values_list('table__id', flat=True)
 
             # Find tables that can accommodate the guests and are not booked
             available_tables = Table.objects.filter(
@@ -110,10 +113,10 @@ def check_availability(request):
             messages.error(
                 request, "Please correct the errors to check availability.")
     else:
-        form = AvailabilityForm()  # Initialize empty form for GET request
+        form = AvailabilityForm()
 
     context = {
         'form': form,
-        'available_tables': available_tables,  # Pass tables to template
+        'available_tables': available_tables,
     }
     return render(request, 'bookings/check_availability.html', context)

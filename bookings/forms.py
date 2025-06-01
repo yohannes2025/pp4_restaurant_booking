@@ -56,6 +56,7 @@ class BookingForm(forms.ModelForm):
 
         return cleaned_data
 
+
 class AvailabilityForm(forms.Form):
     check_date = forms.DateField(
         label='Date',
@@ -83,10 +84,12 @@ class AvailabilityForm(forms.Form):
         num_guests = cleaned_data.get('num_guests')
 
         if check_date and check_time:
+            # Make check_datetime timezone-aware for comparison (FIX)
             check_datetime_naive = datetime.combine(check_date, check_time)
-            check_datetime = check_datetime_naive
+            check_datetime = timezone.make_aware(
+                check_datetime_naive)  # FIX: Make aware
 
-            if check_datetime < timezone.now() - timedelta(minutes=1):  
+            if check_datetime < timezone.now() - timedelta(minutes=1):
                 raise forms.ValidationError(
                     "You cannot check availability for a past date and time.")
 
