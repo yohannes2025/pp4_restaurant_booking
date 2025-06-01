@@ -4,9 +4,9 @@ from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
 from datetime import datetime, timedelta, date, time
-
 from .models import Booking, Table
 from .forms import BookingForm, AvailabilityForm
+from django.db.models import Q  # Import Q for complex queries
 
 
 def home_view(request):
@@ -71,8 +71,30 @@ def make_booking(request):
 
 @login_required
 def my_bookings(request):
-    """Placeholder for displaying user's bookings."""
-    return render(request, 'bookings/my_bookings.html')
+    """Display a list of the current user's bookings."""
+    # Upcoming bookings: date is today or in the future, and not cancelled/completed
+    upcoming_bookings = Booking.objects.filter(
+        user=request.user,
+        booking_date__gte=timezone.now().date()
+    ).exclude(status__in=['cancelled', 'no-show', 'completed']).order_by('booking_date', 'booking_time')
+
+    # Past bookings: date is in the past, or date is today but time is in the past
+    past_bookings = Booking.objects.filter(
+        user=request.user
+    ).filter(
+        Q(booking_date__lt=timezone.now().date()) |  # Date is in the past
+        # Or date is today and time is in the past
+        Q(booking_date=timezone.now().date(),
+          booking_time__lt=timezone.now().time())
+        # Order by most recent past booking first
+    ).order_by('-booking_date', '-booking_time')
+
+    context = {
+        'upcoming_bookings': upcoming_bookings,
+        'past_bookings': past_bookings,
+    }
+    return render(request, 'bookings/my_bookings.html', context)
+
 
 
 @login_required
