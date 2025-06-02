@@ -322,15 +322,34 @@ def staff_booking_detail(request, booking_id):
 
     booking = get_object_or_404(Booking, id=booking_id)
 
-    # We will define BookingStatusUpdateForm in the next commit
+    if request.method == 'POST':
 
-    # For now, just display the booking details
+        form = BookingStatusUpdateForm(
+            request.POST, instance=booking)  # Use the new form
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(request, "Booking status updated successfully!")
+
+            return redirect('staff_booking_list')
+
+        else:
+
+            messages.error(
+                request, "Error updating booking status. Please correct the errors.")
+
+    else:
+
+        # Initialize form with existing data
+        form = BookingStatusUpdateForm(instance=booking)
 
     context = {
 
         'booking': booking,
 
-        # 'form': form, # Will be added later
+        'form': form,  # Pass the form to the template
 
     }
 

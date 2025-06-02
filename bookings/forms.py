@@ -1,5 +1,5 @@
 from django import forms
-from .models import Booking
+from .models import Booking, Table
 from datetime import date, time, datetime, timedelta
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -110,3 +110,31 @@ class AvailabilityForm(forms.Form):
             raise forms.ValidationError("Number of guests must be at least 1.")
 
         return cleaned_data
+
+
+# Form for staff to update booking status
+
+class BookingStatusUpdateForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Booking
+
+        fields = ['status', 'notes']  # Staff can update status and notes
+
+        widgets = {
+
+            'notes': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+
+            # Use select for choices
+            'status': forms.Select(attrs={'class': 'form-select'}),
+
+        }
+
+    labels = {
+
+        'status': 'Booking Status',
+
+        'notes': 'Staff Notes (Internal)',  # Clarify this is for staff
+
+    }
