@@ -2,6 +2,15 @@ from django import forms
 from .models import Booking
 from datetime import date, time, datetime, timedelta
 from django.utils import timezone
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+
+
+class CustomUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'password1', 'password2')
+
 
 
 class BookingForm(forms.ModelForm):
