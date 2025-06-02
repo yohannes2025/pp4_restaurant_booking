@@ -119,24 +119,15 @@ class BookingStatusUpdateForm(forms.ModelForm):
     class Meta:
 
         model = Booking
-
         fields = ['status', 'notes']  # Staff can update status and notes
-
         widgets = {
-
             'notes': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
-
             # Use select for choices
             'status': forms.Select(attrs={'class': 'form-select'}),
-
         }
-
     labels = {
-
         'status': 'Booking Status',
-
         'notes': 'Staff Notes (Internal)',  # Clarify this is for staff
-
     }
 
 
@@ -147,21 +138,12 @@ class TableForm(forms.ModelForm):
     class Meta:
 
         model = Table
-
         fields = ['number', 'capacity']
-
         widgets = {
-
             'number': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
-
             'capacity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
-
         }
-
         labels = {
-
             'number': 'Table Number',
-
             'capacity': 'Seating Capacity',
-
         }

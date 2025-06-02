@@ -5,12 +5,18 @@ from django.db import transaction
 from django.utils import timezone
 from datetime import datetime, timedelta, date, time
 from .models import Booking, Table
-from .forms import BookingForm, AvailabilityForm, CustomUserCreationForm
 from django.db.models import Q  # Import Q for complex queries
 from django.contrib.auth import login
 from django.db.models import Q
 from django.contrib.admin.views.decorators import staff_member_required
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger  # NEW IMPORT
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from .forms import (
+    BookingForm,
+    AvailabilityForm,
+    BookingStatusUpdateForm,
+    TableForm,
+    CustomUserCreationForm,
+)
 
 
 def home_view(request):
