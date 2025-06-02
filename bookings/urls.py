@@ -10,4 +10,8 @@ urlpatterns = [
   path('cancel-booking/<int:booking_id>/',views.cancel_booking, name='cancel_booking'),
   path('check-availability/', views.check_availability,name='check_availability'),
   path('register/', register, name='register'),
+
+  # Staff Dashboard URLs (NEW)
+  path('staff/', views.staff_dashboard, name='staff_dashboard'),
+
 ]

@@ -181,3 +181,51 @@ def check_availability(request):
         'available_tables': available_tables,
     }
     return render(request, 'bookings/check_availability.html', context)
+
+
+# NEW: Staff Dashboard Views
+
+@staff_member_required  # Requires user to be logged in and is_staff=True
+def staff_dashboard(request):
+    """Restaurant staff dashboard overview."""
+
+    today = timezone.now().date()
+
+    now_time = timezone.now().time()
+
+    # Upcoming bookings for today or future, that are pending or confirmed
+
+    upcoming_active_bookings_count = Booking.objects.filter(
+
+        Q(booking_date__gt=today) |  # Bookings in the future
+
+        # Bookings today at or after current time
+        Q(booking_date=today, booking_time__gte=now_time)
+
+    ).filter(status__in=['pending', 'confirmed']).count()
+
+    # Bookings confirmed for today
+
+    confirmed_today_count = Booking.objects.filter(
+
+        booking_date=today,
+
+        status='confirmed'
+
+    ).count()
+
+    total_tables = Table.objects.count()
+
+    context = {
+
+        'upcoming_active_bookings_count': upcoming_active_bookings_count,
+
+        'confirmed_today_count': confirmed_today_count,
+
+        'total_tables': total_tables,
+
+        'today': today,  # Pass today's date for filtering links in template
+
+    }
+
+    return render(request, 'bookings/staff_dashboard.html', context)
