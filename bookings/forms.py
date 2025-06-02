@@ -138,3 +138,30 @@ class BookingStatusUpdateForm(forms.ModelForm):
         'notes': 'Staff Notes (Internal)',  # Clarify this is for staff
 
     }
+
+
+# Form for staff to add/edit tables
+
+class TableForm(forms.ModelForm):
+
+    class Meta:
+
+        model = Table
+
+        fields = ['number', 'capacity']
+
+        widgets = {
+
+            'number': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+
+            'capacity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+
+        }
+
+        labels = {
+
+            'number': 'Table Number',
+
+            'capacity': 'Seating Capacity',
+
+        }
