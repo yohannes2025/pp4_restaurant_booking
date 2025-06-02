@@ -47,8 +47,11 @@
                             <td>{{ table.number }}</td>
                             <td>{{ table.capacity }}</td>
                             <td>
-                                {# Links for edit/delete will be added later #}
-                                <span class="text-muted">No direct actions here yet. Use Django Admin.</span>
+                                <a href="{% url 'staff_table_edit' table.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+                                <form action="{% url 'staff_table_delete' table.id %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete Table {{ table.number }}? This cannot be undone and will affect related bookings!');">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     {% endfor %}
