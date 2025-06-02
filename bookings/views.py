@@ -8,6 +8,9 @@ from .models import Booking, Table
 from .forms import BookingForm, AvailabilityForm, CustomUserCreationForm
 from django.db.models import Q  # Import Q for complex queries
 from django.contrib.auth import login
+from django.db.models import Q
+from django.contrib.admin.views.decorators import staff_member_required
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger  # NEW IMPORT
 
 
 def home_view(request):
@@ -183,8 +186,6 @@ def check_availability(request):
     return render(request, 'bookings/check_availability.html', context)
 
 
-# NEW: Staff Dashboard Views
-
 @staff_member_required  # Requires user to be logged in and is_staff=True
 def staff_dashboard(request):
     """Restaurant staff dashboard overview."""
@@ -229,3 +230,85 @@ def staff_dashboard(request):
     }
 
     return render(request, 'bookings/staff_dashboard.html', context)
+
+
+# Staff Booking List View
+
+@staff_member_required
+def staff_booking_list(request):
+    """List all bookings for staff, with search and filters."""
+
+    bookings_list = Booking.objects.all().order_by(
+        '-booking_date', '-booking_time')  # Get all bookings
+
+    query = request.GET.get('q')  # Search query
+
+    status_filter = request.GET.get('status')  # Status filter
+
+    date_filter = request.GET.get('date')  # Date filter
+
+    if query:
+
+        bookings_list = bookings_list.filter(
+
+            Q(user__username__icontains=query) |
+
+            Q(table__number__icontains=query) |
+
+            Q(notes__icontains=query)
+
+        )
+
+    if status_filter:
+
+        bookings_list = bookings_list.filter(status=status_filter)
+
+    if date_filter:
+
+        try:
+
+            parsed_date = datetime.strptime(date_filter, '%Y-%m-%d').date()
+
+            bookings_list = bookings_list.filter(booking_date=parsed_date)
+
+        except ValueError:
+
+            messages.error(
+                request, "Invalid date format. Please use YYYY-MM-DD.")
+
+            date_filter = None  # Reset date_filter to avoid pre-filling invalid value
+
+    # Implement pagination
+
+    paginator = Paginator(bookings_list, 10)  # Show 10 bookings per page
+
+    page = request.GET.get('page')
+
+    try:
+
+        bookings = paginator.page(page)
+
+    except PageNotAnInteger:
+
+        bookings = paginator.page(1)
+
+    except EmptyPage:
+
+        bookings = paginator.page(paginator.num_pages)
+
+    context = {
+
+        'bookings': bookings,
+
+        'query': query,
+
+        'status_filter': status_filter,
+
+        'date_filter': date_filter,
+
+        # Pass choices to template for dropdown
+        'status_choices': Booking.BOOKING_STATUS_CHOICES,
+
+    }
+
+    return render(request, 'bookings/staff_booking_list.html', context)
