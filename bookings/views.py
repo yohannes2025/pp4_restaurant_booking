@@ -14,6 +14,24 @@ def home_view(request):
     return render(request, 'bookings/home.html')
 
 
+def register(request):
+    if request.method == 'POST':
+        form = CustomUserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            # Automatically log in the user after registration
+            login(request, user)
+            messages.success(request, "Registration successful. Welcome!")
+            return redirect('home')  # Redirect to home page or a profile page
+        else:
+            # Add error messages to the form for display in template
+            messages.error(
+                request, "Registration failed. Please correct the errors below.")
+    else:
+        form = CustomUserCreationForm()
+    return render(request, 'registration/register.html', {'form': form})
+
+
 @login_required
 def make_booking(request):
     """Handle the booking creation form."""
