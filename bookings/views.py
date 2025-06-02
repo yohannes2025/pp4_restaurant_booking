@@ -393,3 +393,46 @@ def staff_table_list(request):
     }
 
     return render(request, 'bookings/staff_table_list.html', context)
+
+
+# Staff Table Edit View
+
+@staff_member_required
+def staff_table_edit(request, table_id):
+    """Edit an existing table."""
+
+    table = get_object_or_404(Table, id=table_id)  # Get the specific table
+
+    if request.method == 'POST':
+
+        # Populate form with POST data and instance
+        form = TableForm(request.POST, instance=table)
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request, f"Table {table.number} updated successfully!")
+
+            return redirect('staff_table_list')  # Redirect back to list
+
+        else:
+
+            messages.error(
+                request, "Error updating table. Please check the form.")
+
+    else:
+
+        # Populate form with existing table data for GET request
+        form = TableForm(instance=table)
+
+    context = {
+
+        'form': form,
+
+        'table': table,  # Pass table object to template
+
+    }
+
+    return render(request, 'bookings/staff_table_edit.html', context)
