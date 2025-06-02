@@ -5,8 +5,9 @@ from django.db import transaction
 from django.utils import timezone
 from datetime import datetime, timedelta, date, time
 from .models import Booking, Table
-from .forms import BookingForm, AvailabilityForm
+from .forms import BookingForm, AvailabilityForm, CustomUserCreationForm
 from django.db.models import Q  # Import Q for complex queries
+from django.contrib.auth import login
 
 
 def home_view(request):
