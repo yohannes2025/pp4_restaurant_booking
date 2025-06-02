@@ -1,10 +1,7 @@
 {% extends 'bookings/staff_base.html' %}
-
 {% block title %}All Bookings{% endblock %}
-
 {% block content %}
     <h1 class="mb-4">All Bookings</h1>
-
     <form method="get" class="row g-3 align-items-end mb-4">
         <div class="col-md-4">
             <label for="query" class="form-label">Search</label>
@@ -62,7 +59,6 @@
                 </tbody>
             </table>
         </div>
-
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 {% if bookings.has_previous %}
@@ -76,7 +72,6 @@
                 {% endif %}
             </ul>
         </nav>
-
     {% else %}
         <div class="alert alert-warning" role="alert">
             No bookings found matching your criteria.
