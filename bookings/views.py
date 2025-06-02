@@ -312,3 +312,26 @@ def staff_booking_list(request):
     }
 
     return render(request, 'bookings/staff_booking_list.html', context)
+
+
+# Staff Booking Detail View
+
+@staff_member_required
+def staff_booking_detail(request, booking_id):
+    """View and update details of a specific booking."""
+
+    booking = get_object_or_404(Booking, id=booking_id)
+
+    # We will define BookingStatusUpdateForm in the next commit
+
+    # For now, just display the booking details
+
+    context = {
+
+        'booking': booking,
+
+        # 'form': form, # Will be added later
+
+    }
+
+    return render(request, 'bookings/staff_booking_detail.html', context)

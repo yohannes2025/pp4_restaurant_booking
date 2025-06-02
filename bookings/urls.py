@@ -13,5 +13,7 @@ urlpatterns = [
 
   # Staff Dashboard URLs (NEW)
   path('staff/', views.staff_dashboard, name='staff_dashboard'),
+  path('staff/bookings/', views.staff_booking_list, name='staff_booking_list'),
+  path('staff/bookings/<int:booking_id>/', views.staff_booking_detail, name='staff_booking_detail'),
 
 ]
