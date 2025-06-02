@@ -24,7 +24,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'check_availability' %}">Check Availability</a> {# NEW LINK #}
+                        <a class="nav-link" href="{% url 'check_availability' %}">Check Availability</a>
                     </li>
                     {% if user.is_authenticated %}
                         <li class="nav-item">
@@ -33,6 +33,15 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'my_bookings' %}">My Bookings</a>
                         </li>
+                        {% if user.is_staff %} {# NEW: Conditional staff portal link #}
+
+                        <li class="nav-item">
+
+                            <a class="nav-link text-warning" href="{% url 'staff_dashboard' %}">Staff Portal</a>
+
+                        </li>
+
+                        {% endif %}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ user.username }}
