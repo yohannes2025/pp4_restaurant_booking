@@ -1,12 +1,13 @@
-
-{% extends 'bookings/staff_base.html' %}
+{% extends 'bookings/staff_base.html' %}  {# Inherit from base staff template #}
 
 {% block title %}Staff Dashboard{% endblock %}
 
 {% block content %}
     <h1 class="mb-4">Staff Dashboard</h1>
 
+    <!-- Summary cards displaying booking and table status -->
     <div class="row">
+        <!-- Card for today's confirmed bookings -->
         <div class="col-md-4">
             <div class="card text-white bg-info mb-3">
                 <div class="card-header">Today's Confirmed Bookings</div>
@@ -17,6 +18,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- Card for upcoming active bookings -->
         <div class="col-md-4">
             <div class="card text-white bg-warning mb-3">
                 <div class="card-header">Upcoming Active Bookings</div>
@@ -28,6 +31,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- Card for total tables -->
         <div class="col-md-4">
             <div class="card text-white bg-success mb-3">
                 <div class="card-header">Total Tables</div>
@@ -40,6 +45,7 @@
         </div>
     </div>
 
+    <!-- Quick access links to admin features -->
     <div class="mt-4">
         <h2 class="mb-3">Quick Actions</h2>
         <div class="list-group">            

@@ -1,4 +1,4 @@
-{% extends 'bookings/staff_base.html' %}
+{% extends 'bookings/staff_base.html' %}  {# Extend the base template for consistent layout #}
 
 {% block title %}Edit Table {{ table.number }}{% endblock %}
 
@@ -7,25 +7,37 @@
 
     <div class="card shadow-sm">
         <div class="card-body">
-            <form method="post">
-                {% csrf_token %}
+            <form method="post">  {# Form for editing table details #}
+                {% csrf_token %}  {# CSRF protection token #}
                 <div class="row g-3">
+                    <!-- Table number input -->
                     <div class="col-md-6">
                         <label for="{{ form.number.id_for_label }}" class="form-label">{{ form.number.label }}</label>
                         {{ form.number }}
-                        {% for error in form.number.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        {% for error in form.number.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
                     </div>
+                    <!-- Table capacity input -->
                     <div class="col-md-6">
                         <label for="{{ form.capacity.id_for_label }}" class="form-label">{{ form.capacity.label }}</label>
                         {{ form.capacity }}
-                        {% for error in form.capacity.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+                        {% for error in form.capacity.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                        {% endfor %}
                     </div>
                 </div>
+
+                <!-- Non-field validation errors -->
                 {% if form.non_field_errors %}
                     <div class="alert alert-danger mt-3">
-                        {% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <p class="mb-0">{{ error }}</p>
+                        {% endfor %}
                     </div>
                 {% endif %}
+
+                <!-- Submit and cancel buttons -->
                 <div class="mt-4">
                     <button type="submit" class="btn btn-primary me-2">Save Changes</button>
                     <a href="{% url 'staff_table_list' %}" class="btn btn-secondary">Cancel</a>

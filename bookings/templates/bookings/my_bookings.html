@@ -1,4 +1,4 @@
-{% extends 'bookings/base.html' %}
+{% extends 'bookings/base.html' %}  {# Extend base template #}
 
 {% block title %}My Bookings{% endblock %}
 
@@ -8,26 +8,34 @@
 <!-- Upcoming Bookings -->
 <h2 class="mb-3">Upcoming Bookings</h2>
 
-<!-- Cards for small screens -->
+<!-- Display booking cards on small screens -->
 <div class="d-md-none">
     {% if upcoming_bookings %}
         {% for booking in upcoming_bookings %}
             <div class="card booking-card shadow-sm mb-3">
                 <div class="card-body">
+                    <!-- Booking info -->
                     <h5 class="card-title">Booking for Table {{ booking.table.number }}</h5>
                     <p class="card-text mb-1"><strong>Date:</strong> {{ booking.booking_date|date:"F d, Y" }}</p>
                     <p class="card-text mb-1"><strong>Time:</strong> {{ booking.booking_time|time:"h:i A" }}</p>
                     <p class="card-text mb-1"><strong>Guests:</strong> {{ booking.number_of_guests }}</p>
+
+                    <!-- Dynamic status badge -->
                     <p class="card-text mb-1"><strong>Status:</strong>
                         <span class="badge {% if booking.status == 'pending' %}bg-warning{% elif booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
                             {{ booking.get_status_display }}
                         </span>
                     </p>
+
+                    <!-- Optional notes -->
                     {% if booking.notes %}
                         <p class="card-text mb-1"><strong>Notes:</strong> {{ booking.notes }}</p>
                     {% endif %}
+
+                    <!-- Table capacity info -->
                     <p class="card-text"><small class="text-muted">Table Capacity: {{ booking.table.capacity }}</small></p>
 
+                    <!-- Show edit/cancel actions if not cancelled -->
                     {% if booking.status != 'cancelled' %}
                         <a href="{% url 'edit_booking' booking.id %}" class="btn btn-sm btn-info me-2">Edit</a>
                         <form action="{% url 'cancel_booking' booking.id %}" method="post" class="d-inline">
@@ -45,7 +53,7 @@
     {% endif %}
 </div>
 
-<!-- Table for medium+ screens -->
+<!-- Display booking table on medium and larger screens -->
 <div class="d-none d-md-block mb-5">
     {% if upcoming_bookings %}
         <div class="table-responsive">
@@ -65,11 +73,13 @@
                 <tbody>
                     {% for booking in upcoming_bookings %}
                         <tr>
+                            <!-- Display booking details in table row -->
                             <td>{{ booking.table.number }}</td>
                             <td>{{ booking.booking_date|date:"F d, Y" }}</td>
                             <td>{{ booking.booking_time|time:"h:i A" }}</td>
                             <td>{{ booking.number_of_guests }}</td>
                             <td>
+                                <!-- Conditional status badge -->
                                 <span class="badge {% if booking.status == 'pending' %}bg-warning{% elif booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">
                                     {{ booking.get_status_display }}
                                 </span>
@@ -106,15 +116,20 @@
         {% for booking in past_bookings %}
             <div class="card booking-card bg-light shadow-sm mb-3">
                 <div class="card-body">
+                    <!-- Display past booking details -->
                     <h5 class="card-title text-muted">Booking for Table {{ booking.table.number }}</h5>
                     <p class="card-text mb-1"><strong>Date:</strong> {{ booking.booking_date|date:"F d, Y" }}</p>
                     <p class="card-text mb-1"><strong>Time:</strong> {{ booking.booking_time|time:"h:i A" }}</p>
                     <p class="card-text mb-1"><strong>Guests:</strong> {{ booking.number_of_guests }}</p>
+
+                    <!-- Status badge -->
                     <p class="card-text mb-1"><strong>Status:</strong>
                         <span class="badge {% if booking.status == 'completed' %}bg-secondary{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-info{% endif %}">
                             {{ booking.get_status_display }}
                         </span>
                     </p>
+
+                    <!-- Optional notes -->
                     {% if booking.notes %}
                         <p class="card-text mb-1"><strong>Notes:</strong> {{ booking.notes }}</p>
                     {% endif %}
@@ -146,6 +161,7 @@
                 <tbody>
                     {% for booking in past_bookings %}
                         <tr>
+                            <!-- Past booking row details -->
                             <td>{{ booking.table.number }}</td>
                             <td>{{ booking.booking_date|date:"F d, Y" }}</td>
                             <td>{{ booking.booking_time|time:"h:i A" }}</td>

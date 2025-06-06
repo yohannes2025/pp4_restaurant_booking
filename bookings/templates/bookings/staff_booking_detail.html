@@ -1,10 +1,11 @@
-{% extends 'bookings/staff_base.html' %}
+{% extends 'bookings/staff_base.html' %}  {# Inherit from the staff base layout #}
 
 {% block title %}Booking Details{% endblock %}
 
 {% block content %}
     <h1 class="mb-4">Booking Details (ID: {{ booking.id }})</h1>
 
+    <!-- Booking Information Card -->
     <div class="card mb-4">
         <div class="card-header">
             Booking Information
@@ -15,13 +16,22 @@
             <p><strong>Date:</strong> {{ booking.booking_date|date:"F d, Y" }}</p>
             <p><strong>Time:</strong> {{ booking.booking_time|time:"h:i A" }}</p>
             <p><strong>Guests:</strong> {{ booking.number_of_guests }}</p>
-            <p><strong>Current Status:</strong> <span class="badge {% if booking.status == 'pending' %}bg-warning{% elif booking.status == 'confirmed' %}bg-success{% elif booking.status == 'cancelled' %}bg-danger{% else %}bg-secondary{% endif %}">{{ booking.get_status_display }}</span></p>
+            <p><strong>Current Status:</strong>
+                <span class="badge 
+                    {% if booking.status == 'pending' %}bg-warning
+                    {% elif booking.status == 'confirmed' %}bg-success
+                    {% elif booking.status == 'cancelled' %}bg-danger
+                    {% else %}bg-secondary{% endif %}">
+                    {{ booking.get_status_display }}
+                </span>
+            </p>
             <p><strong>Notes (Customer):</strong> {{ booking.notes|default:"N/A" }}</p>
             <p><small class="text-muted">Booked On: {{ booking.created_at|date:"F d, Y H:i" }}</small></p>
             <p><small class="text-muted">Last Updated: {{ booking.updated_at|date:"F d, Y H:i" }}</small></p>
         </div>
     </div>
 
+    <!-- Form to update booking status -->
     <h2 class="mb-3">Update Booking Status</h2>
     <form method="post">
         {% csrf_token %}
@@ -37,6 +47,7 @@
                 {% endfor %}
             </div>
         {% endfor %}
+
         {% if form.non_field_errors %}
             <div class="alert alert-danger">
                 {% for error in form.non_field_errors %}
@@ -44,6 +55,8 @@
                 {% endfor %}
             </div>
         {% endif %}
+
+        <!-- Action buttons -->
         <div class="mt-4">
             <button type="submit" class="btn btn-primary me-2">Save Changes</button>
             <a href="{% url 'staff_booking_list' %}" class="btn btn-secondary">Back to Bookings</a>

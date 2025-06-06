@@ -1,15 +1,19 @@
+# Standard library imports
+from datetime import datetime, timedelta, time
+
+# Third-party imports
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
 from django.utils import timezone
-from datetime import datetime, timedelta, date, time
-from .models import Booking, Table
-from django.db.models import Q  # Import Q for complex queries
 from django.contrib.auth import login
-from django.db.models import Q
 from django.contrib.admin.views.decorators import staff_member_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import Q
+
+# Local application imports
+from .models import Booking, Table
 from .forms import (
     BookingForm,
     AvailabilityForm,
@@ -17,6 +21,7 @@ from .forms import (
     TableForm,
     CustomUserCreationForm,
 )
+
 
 
 def home_view(request):
@@ -126,7 +131,7 @@ def my_bookings(request):
 
 @login_required
 def edit_booking(request, booking_id):
-    """Allow a user to edit their existing booking."""
+    """Allow a user to edit his/her existing booking."""
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
     if request.method == 'POST':
@@ -217,7 +222,7 @@ def edit_booking(request, booking_id):
 
 @login_required
 def cancel_booking(request, booking_id):
-    """Allow a user to cancel their booking."""
+    """Allow a user to cancel his/her booking."""
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
     # Prevent cancellation if the booking is too close to the time (e.g., within 2 hours)
@@ -243,7 +248,7 @@ def cancel_booking(request, booking_id):
 
 
 def check_availability(request):
-    """View to check table availability based on date, time, and guests."""
+    """View to check table availability based on date, time, and number of guests."""
     available_tables = []
     if request.method == 'POST':
         form = AvailabilityForm(request.POST)
