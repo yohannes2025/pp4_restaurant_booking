@@ -188,3 +188,50 @@ class AuthenticatedViewsTest(TestCase):
             response, "No tables available for your requested date, time, and number of guests.")
         self.assertEqual(Booking.objects.count(),
                          initial_booking_count)  # No new booking
+        
+    def test_my_bookings_view_display(self):
+        """
+        Test that a user's bookings are displayed correctly.
+        """
+        # Create a past booking for the user
+        past_booking_date = date.today() - timedelta(days=5)
+        past_booking_time = time(10, 0)
+        Booking.objects.create(
+            user=self.user, table=self.table1, booking_date=past_booking_date,
+            booking_time=past_booking_time, number_of_guests=2, status='Completed'
+        )
+        # Create an upcoming booking for the user
+        upcoming_booking_date = date.today() + timedelta(days=5)
+        upcoming_booking_time = time(18, 0)
+        upcoming_booking = Booking.objects.create(
+            user=self.user, table=self.table2, booking_date=upcoming_booking_date,
+            booking_time=upcoming_booking_time, number_of_guests=3, status='pending'
+        )
+        # Create a booking for another user (should not be displayed)
+        other_user = User.objects.create_user(
+            username='otheruser', password='password')
+        Booking.objects.create(
+            user=other_user, table=self.table1, booking_date=upcoming_booking_date,
+            booking_time=upcoming_booking_time, number_of_guests=1, status='confirmed'
+        )
+
+        response = self.client.get(reverse('my_bookings'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/my_bookings.html')
+        self.assertIn('upcoming_bookings', response.context)
+        self.assertIn('past_bookings', response.context)
+
+        self.assertEqual(len(response.context['upcoming_bookings']), 1)
+        self.assertEqual(
+            response.context['upcoming_bookings'][0], upcoming_booking)
+        self.assertContains(response, f"Table {upcoming_booking.table.number}")
+        self.assertContains(response, "Pending")
+
+        self.assertEqual(len(response.context['past_bookings']), 1)
+        self.assertContains(response, "Table 1")
+        self.assertContains(response, "Completed")
+
+        # Ensure other user's booking isn't shown
+        self.assertNotContains(response, "otheruser")
+
+    
