@@ -194,4 +194,41 @@ class StaffViewsTest(TestCase):
         # date_filter should be reset
         self.assertFalse(response.context['date_filter'])
     
-    
+    def test_staff_booking_detail_GET(self):
+        """
+        Test GET request to staff booking detail view.
+        """
+        self.client.login(username='staffuser', password='password123')
+        response = self.client.get(reverse('staff_booking_detail', args=[
+                                   self.booking_today_pending.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/staff_booking_detail.html')
+        self.assertIn('booking', response.context)
+        self.assertEqual(
+            response.context['booking'], self.booking_today_pending)
+        self.assertIn('form', response.context)  # Form for status update
+
+    def test_staff_booking_detail_POST_update_status(self):
+        """
+        Test updating booking status from staff detail view.
+        """
+        self.client.login(username='staffuser', password='password123')
+        initial_status = self.booking_today_pending.status
+        form_data = {
+            'status': 'confirmed',
+            'notes': 'Confirmed by staff.'
+        }
+        response = self.client.post(
+            reverse('staff_booking_detail', args=[
+                    self.booking_today_pending.pk]),
+            data=form_data,
+            follow=True  # Follow redirect to get final response
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertRedirects(response, reverse('staff_booking_list'))
+        self.booking_today_pending.refresh_from_db()
+        self.assertEqual(self.booking_today_pending.status, 'confirmed')
+        self.assertEqual(self.booking_today_pending.notes,
+                         'Confirmed by staff.')
+        self.assertContains(
+            response, "Booking status updated successfully!", html=False)

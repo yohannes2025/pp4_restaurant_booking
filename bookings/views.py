@@ -602,3 +602,4 @@ def staff_table_delete(request, table_id):
             request, "Invalid request to delete table. Please confirm deletion via POST.")
 
         return redirect('staff_table_list')
+    
