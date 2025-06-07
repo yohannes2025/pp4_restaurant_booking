@@ -367,4 +367,83 @@ class AuthenticatedViewsTest(TestCase):
         self.assertIn("already", str(messages[0]))
         self.assertIn("cancelled", str(messages[0]).lower())
 
-    
+    def test_check_availability_GET(self):
+        """
+        Test GET request to check_availability view.
+        """
+        response = self.client.get(reverse('check_availability'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/check_availability.html')
+        self.assertIn('form', response.context)
+        self.assertIn('available_tables', response.context)
+        # No tables should be shown initially
+        self.assertEqual(len(response.context['available_tables']), 0)
+
+    def test_check_availability_POST_found_tables(self):
+        """
+        Test finding available tables.
+        """
+        # Create a booking to make table1 unavailable
+        Booking.objects.create(
+            user=self.user, table=self.table1,
+            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2, status='confirmed'
+        )
+        form_data = {
+            'check_date': self.future_date.isoformat(),
+            'check_time': self.booking_time.strftime('%H:%M'),
+            'num_guests': 3,  # Needs table2 (capacity 4), table1 is booked
+        }
+        response = self.client.post(reverse('check_availability'), form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/check_availability.html')
+        self.assertIn('available_tables', response.context)
+        self.assertEqual(len(response.context['available_tables']), 1)
+        self.assertEqual(response.context['available_tables'][0], self.table2)
+        self.assertContains(response, f"Table {self.table2.number}")
+        self.assertContains(
+            response, f"Capacity: {self.table2.capacity} guests")
+
+    def test_check_availability_POST_no_tables_found(self):
+        """
+        Test no tables found for criteria.
+        """
+        # Book both tables
+        Booking.objects.create(
+            user=self.user, table=self.table1,
+            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2, status='confirmed'
+        )
+        Booking.objects.create(
+            user=self.user, table=self.table2,
+            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=4, status='confirmed'
+        )
+        form_data = {
+            'check_date': self.future_date.isoformat(),
+            'check_time': self.booking_time.strftime('%H:%M'),
+            'num_guests': 3,
+        }
+        response = self.client.post(reverse('check_availability'), form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/check_availability.html')
+        self.assertIn('available_tables', response.context)
+        self.assertEqual(len(response.context['available_tables']), 0)
+        self.assertContains(
+            response,
+            "No tables available for the selected criteria. Please try a different date, time, or number of guests."
+        )
+
+    def test_check_availability_POST_invalid_form(self):
+        """
+        Test availability check with invalid form data (e.g., past date).
+        """
+        past_date = date.today() - timedelta(days=1)
+        form_data = {
+            'check_date': past_date.isoformat(),
+            'check_time': '12:00',
+            'num_guests': 2,
+        }
+        response = self.client.post(reverse('check_availability'), form_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/check_availability.html')
+        self.assertFalse(response.context['form'].is_valid())
+        self.assertContains(
+            response, "You cannot check availability for a past date and time.")
