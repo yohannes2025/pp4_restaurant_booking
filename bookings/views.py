@@ -34,14 +34,17 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
-            # Automatically log in the user after registration
+
+            # FIX: Set backend explicitly
+            user.backend = 'django.contrib.auth.backends.ModelBackend'
+
             login(request, user)
             messages.success(request, "Registration successful. Welcome!")
-            return redirect('home')  # Redirect to home page or a profile page
+            return redirect('home')
         else:
-            # Add error messages to the form for display in template
             messages.error(
                 request, "Registration failed. Please correct the errors below.")
+            return render(request, 'registration/register.html', {'form': form})
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
