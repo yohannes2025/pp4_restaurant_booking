@@ -271,3 +271,22 @@ class StaffViewsTest(TestCase):
 
         # Verify that the new table exists in the database
         self.assertTrue(Table.objects.filter(number=new_table_number).exists())
+
+    def test_staff_table_list_POST_add_table_duplicate_number(self):
+        self.client.login(username='staffuser', password='password123')
+
+        response = self.client.post(reverse('staff_table_list'), {
+            'number': self.table1.number,  # duplicate number
+            'capacity': 5
+        }, follow=True)
+
+        # <-- Add this line to debug the actual response content
+        print(response.content.decode())
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertContains(
+            response, "Table with this Number already exists.")
+        self.assertContains(
+            response, "Please correct the errors in the form when adding a table.")
+        self.assertEqual(Table.objects.count(), 3)
