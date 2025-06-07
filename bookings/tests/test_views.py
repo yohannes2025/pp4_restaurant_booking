@@ -361,7 +361,7 @@ class AuthenticatedViewsTest(TestCase):
         # This must be 302 because the view should redirect
         self.assertEqual(response.status_code, 302)
 
-        # Optional: follow the redirect and check messages if needed
+        # follow the redirect and check messages
         response = self.client.post(url, follow=True)
         messages = list(response.context['messages'])
         self.assertIn("already", str(messages[0]))
