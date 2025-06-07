@@ -60,25 +60,53 @@ def make_booking(request):
             booking_time = form.cleaned_data['booking_time']
             number_of_guests = form.cleaned_data['number_of_guests']
 
-            booking_datetime_naive = datetime.combine(
-                booking_date, booking_time)
-            booking_datetime = timezone.make_aware(booking_datetime_naive)
+            # Combine date and time, then make it timezone-aware
+            booking_datetime = datetime.combine(booking_date, booking_time)
+            booking_datetime = timezone.make_aware(booking_datetime)
 
-            if booking_datetime < timezone.now() - timedelta(minutes=1):
-                messages.error(
-                    request, "Booking date and time cannot be in the past.")
+            # Define allowed time range
+            opening_time = time(9, 0)   # 9:00 AM
+            closing_time = time(22, 0)  # 10:00 PM
+
+            # Check if booking time is outside of allowed interval
+            if not (opening_time <= booking_time <= closing_time):
+                messages.warning(
+                    request, "Bookings can only be made between 9:00 AM and 10:00 PM.")
                 return render(request, 'bookings/make_booking.html', {'form': form})
 
-            # Find tables already booked at the exact date and time, excluding cancelled ones (FIX)
+            # Check if the booking is in the past
+            if booking_datetime < timezone.now():
+                form.add_error(
+                    'booking_date', "Booking date cannot be in the past.")
+                return render(request, 'bookings/make_booking.html', {'form': form})
+
+            # Find tables booked at the exact time
             booked_tables_ids = Booking.objects.filter(
                 booking_date=booking_date,
                 booking_time=booking_time
-                # FIX: Exclude cancelled
-            ).exclude(status='cancelled').values_list('table__id', flat=True)
+            ).values_list('table__id', flat=True)
 
+            # Start with tables that match capacity and aren't booked at that exact time
             available_tables = Table.objects.filter(
                 capacity__gte=number_of_guests
-            ).exclude(id__in=booked_tables_ids).order_by('capacity')
+            ).exclude(id__in=booked_tables_ids)
+
+            # Further exclude tables booked within 1 hour window
+            one_hour_before = (datetime.combine(
+                booking_date, booking_time) - timedelta(hours=1)).time()
+            one_hour_after = (datetime.combine(
+                booking_date, booking_time) + timedelta(hours=1)).time()
+
+            conflicting_bookings = Booking.objects.filter(
+                booking_date=booking_date,
+                table__in=available_tables,
+                booking_time__range=(one_hour_before, one_hour_after)
+            )
+
+            conflicting_table_ids = conflicting_bookings.values_list(
+                'table__id', flat=True)
+            available_tables = available_tables.exclude(
+                id__in=conflicting_table_ids).order_by('capacity')
 
             if available_tables.exists():
                 selected_table = available_tables.first()
@@ -87,7 +115,7 @@ def make_booking(request):
                         booking = form.save(commit=False)
                         booking.user = request.user
                         booking.table = selected_table
-                        booking.status = 'pending'
+                        booking.status = 'confirmed'
                         booking.save()
                         messages.success(
                             request, f"Your booking for Table {selected_table.number} has been confirmed!")

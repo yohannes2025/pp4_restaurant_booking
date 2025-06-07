@@ -106,3 +106,85 @@ class AuthenticatedViewsTest(TestCase):
 
     def tearDown(self):
         self.patcher.stop()
+
+    def test_make_booking_GET_authenticated(self):
+        """
+        Test GET request to make_booking view for authenticated user.
+        """
+        response = self.client.get(reverse('make_booking'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/make_booking.html')
+        self.assertIn('form', response.context)
+
+    def test_make_booking_GET_unauthenticated(self):
+        """
+        Test GET request to make_booking view for unauthenticated user (should redirect).
+        """
+        self.client.logout()
+        response = self.client.get(reverse('make_booking'))
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(
+            response, f"/accounts/login/?next={reverse('make_booking')}")
+
+    def test_make_booking_POST_success(self):
+        self.client.login(username='testuser', password='password')
+        data = {
+            'booking_date': (timezone.now() + timedelta(days=1)).date(),
+            'booking_time': '18:00',
+            'number_of_guests': 2,
+            'notes': 'Window seat',
+            'table': self.table1.id
+        }
+        response = self.client.post(reverse('make_booking'), data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        booking = Booking.objects.get(user=self.user)
+        self.assertEqual(booking.status, 'confirmed')  # Match your view logic
+
+    def test_make_booking_POST_past_date_time(self):
+        past_date = (timezone.now() - timedelta(days=1)).date()
+        data = {
+            'booking_date': past_date,
+            'booking_time': time(12, 0),
+            'number_of_guests': 2,
+            'notes': 'Test past booking',
+        }
+        response = self.client.post(reverse('make_booking'), data)
+
+        # The form should be re-rendered with errors, status code 200
+        self.assertEqual(response.status_code, 200)
+
+        form = response.context['form']
+
+        # Check that 'booking_date' field has the expected error message
+        self.assertIn('booking_date', form.errors)
+        self.assertIn('Booking date and time cannot be in the past.',
+                      form.errors['booking_date'])
+
+    def test_make_booking_POST_no_tables_available(self):
+        """
+        Test booking creation when no tables are available.
+        """
+        # Book table1
+        Booking.objects.create(
+            user=self.user, table=self.table1,
+            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2, status='confirmed'
+        )
+        # Book table2
+        Booking.objects.create(
+            user=self.user, table=self.table2,
+            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=4, status='confirmed'
+        )
+        initial_booking_count = Booking.objects.count()  # Should be 2 now
+
+        form_data = {
+            'booking_date': self.future_date.isoformat(),
+            'booking_time': self.booking_time.strftime('%H:%M'),
+            'number_of_guests': 3,  # Needs capacity 3, but both tables are booked
+        }
+        response = self.client.post(reverse('make_booking'), form_data)
+        self.assertEqual(response.status_code, 200)  # Should re-render form
+        self.assertTemplateUsed(response, 'bookings/make_booking.html')
+        self.assertContains(
+            response, "No tables available for your requested date, time, and number of guests.")
+        self.assertEqual(Booking.objects.count(),
+                         initial_booking_count)  # No new booking
