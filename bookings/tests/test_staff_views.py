@@ -232,3 +232,42 @@ class StaffViewsTest(TestCase):
                          'Confirmed by staff.')
         self.assertContains(
             response, "Booking status updated successfully!", html=False)
+    
+    def test_staff_table_list_access(self):
+        """
+        Test access to staff table list for staff and non-staff.
+        """
+        self.client.login(username='staffuser', password='password123')
+        response = self.client.get(reverse('staff_table_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/staff_table_list.html')
+        self.assertIn('tables', response.context)
+        self.assertEqual(
+            len(response.context['tables']), Table.objects.count())
+        self.assertIn('form', response.context)  # Form for adding new tables
+
+        self.client.logout()
+        self.client.login(username='normaluser', password='password123')
+        response = self.client.get(reverse('staff_table_list'))
+        # Redirect due to @staff_member_required
+        self.assertEqual(response.status_code, 302)
+
+    def test_staff_table_list_POST_add_table(self):
+        """
+        Test POST request to add a new table from the staff table list view.
+        """
+        self.client.login(username='staffuser', password='password123')
+
+        # Data for the new table with a unique number (e.g., 101)
+        new_table_number = 101
+        response = self.client.post(reverse('staff_table_list'), {
+            'number': new_table_number,
+            'capacity': 6
+        }, follow=True)
+
+        # Check that the response contains the success message
+        self.assertContains(
+            response, f"Table {new_table_number} added successfully!")
+
+        # Verify that the new table exists in the database
+        self.assertTrue(Table.objects.filter(number=new_table_number).exists())

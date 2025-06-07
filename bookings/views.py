@@ -492,40 +492,30 @@ def staff_booking_detail(request, booking_id):
 
 @staff_member_required
 def staff_table_list(request):
-    """List, add, and manage restaurant tables."""
-
-    tables = Table.objects.all().order_by('number')  # Get all tables
-
-    form = TableForm()  # Initialize empty form for adding new tables
+    """
+    Displays a list of all restaurant tables and allows staff to add new ones.
+    """
+    tables = Table.objects.all().order_by('number')
 
     if request.method == 'POST':
-
         form = TableForm(request.POST)
-
         if form.is_valid():
-
             form.save()
-
             messages.success(
                 request, f"Table {form.cleaned_data['number']} added successfully!")
-
-            return redirect('staff_table_list')  # Redirect to refresh the list
-
+            return redirect('staff_table_list')
         else:
-
             messages.error(
-                request, "Error adding table. Please check the form and ensure the table number is unique.")
+                request, "Please correct the errors in the form when adding a table.")
+    else:
+        form = TableForm()  # For GET request, provide an empty form
 
     context = {
-
         'tables': tables,
-
-        'form': form,  # Pass the form to the template
-
+        'form': form,
+        'active_tab': 'tables',
     }
-
     return render(request, 'bookings/staff_table_list.html', context)
-
 
 # Staff Table Edit View
 
