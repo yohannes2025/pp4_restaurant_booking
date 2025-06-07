@@ -79,3 +79,50 @@ class StaffViewsTest(TestCase):
         self.table1.refresh_from_db()
         self.assertEqual(self.table1.number, 99)
         self.assertEqual(self.table1.capacity, 6)
+
+    def test_staff_dashboard_access(self):
+        """
+        Test access to staff dashboard for staff and non-staff users.
+        """
+        # Staff user access
+        self.client.login(username='staffuser', password='password123')
+        response = self.client.get(reverse('staff_dashboard'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/staff_dashboard.html')
+        self.assertIn('upcoming_active_bookings_count', response.context)
+        self.assertIn('confirmed_today_count', response.context)
+        self.assertIn('total_tables', response.context)
+
+        # Non-staff user access (should be denied/redirected)
+        self.client.logout()
+        self.client.login(username='normaluser', password='password123')
+        response = self.client.get(reverse('staff_dashboard'))
+
+        # Redirect to login or permission denied
+        self.assertEqual(response.status_code, 302)
+
+        # The default behavior for staff_member_required is redirect to login if not authenticated        
+        self.assertNotEqual(response.status_code, 200)
+
+        # Unauthenticated user access
+        self.client.logout()
+        response = self.client.get(reverse('staff_dashboard'))
+        self.assertEqual(response.status_code, 302)  # Redirect to login
+
+    def test_staff_dashboard_counts(self):
+        """
+        Test the counts displayed on the staff dashboard.
+        """
+        self.client.login(username='staffuser', password='password123')
+        response = self.client.get(reverse('staff_dashboard'))
+        self.assertEqual(response.status_code, 200)
+
+        # upcoming_active_bookings_count: pending today, confirmed tomorrow
+        self.assertEqual(response.context['upcoming_active_bookings_count'], 2)
+
+        # confirmed_today_count: only bookings confirmed today (if any)
+        self.assertEqual(response.context['confirmed_today_count'], 0)
+
+        # Total tables
+        self.assertEqual(
+            response.context['total_tables'], Table.objects.count())

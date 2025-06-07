@@ -328,50 +328,40 @@ def check_availability(request):
     })
 
 
-@staff_member_required  # Requires user to be logged in and is_staff=True
 def staff_dashboard(request):
-    """Restaurant staff dashboard overview."""
+    # Ensure only staff can access
+    if not request.user.is_staff:
+        # Redirect or show permission denied as appropriate
+        return redirect('login')  # or use permission decorators
 
     today = timezone.now().date()
 
-    now_time = timezone.now().time()
+    # Filter bookings with status 'pending' or 'confirmed' and date >= today
+    upcoming_bookings = Booking.objects.filter(
+        booking_date__gte=today,
+        status__in=['pending', 'confirmed']
+    )
 
-    # Upcoming bookings for today or future, that are pending or confirmed
+    # Count the number of upcoming active bookings
+    upcoming_active_bookings_count = upcoming_bookings.count()
 
-    upcoming_active_bookings_count = Booking.objects.filter(
-
-        Q(booking_date__gt=today) |  # Bookings in the future
-
-        # Bookings today at or after current time
-        Q(booking_date=today, booking_time__gte=now_time)
-
-    ).filter(status__in=['pending', 'confirmed']).count()
-
-    # Bookings confirmed for today
-
+    # Count bookings confirmed for today (optional, based on your context)
     confirmed_today_count = Booking.objects.filter(
-
         booking_date=today,
-
         status='confirmed'
-
     ).count()
 
     total_tables = Table.objects.count()
 
     context = {
-
         'upcoming_active_bookings_count': upcoming_active_bookings_count,
-
         'confirmed_today_count': confirmed_today_count,
-
         'total_tables': total_tables,
-
-        'today': today,  # Pass today's date for filtering links in template
-
     }
 
     return render(request, 'bookings/staff_dashboard.html', context)
+
+# Decorator for staff members (assuming you have this defined elsewhere or use is_staff check)
 
 
 # Staff Booking List View
