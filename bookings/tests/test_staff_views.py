@@ -68,3 +68,14 @@ class StaffViewsTest(TestCase):
 
         # Create a table with a unique number to avoid conflicts
         self.table = Table.objects.create(number=100, capacity=4)
+ 
+    def test_staff_table_edit_POST_success(self):
+        response = self.client.post(
+            reverse('staff_table_edit', args=[self.table1.pk]),
+            data={'number': 99, 'capacity': 6}
+        )
+        self.assertRedirects(response, reverse('staff_table_list'))
+
+        self.table1.refresh_from_db()
+        self.assertEqual(self.table1.number, 99)
+        self.assertEqual(self.table1.capacity, 6)
