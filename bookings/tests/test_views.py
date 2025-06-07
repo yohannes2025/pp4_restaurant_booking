@@ -233,5 +233,67 @@ class AuthenticatedViewsTest(TestCase):
 
         # Ensure other user's booking isn't shown
         self.assertNotContains(response, "otheruser")
+    
+    def test_edit_booking_GET(self):
+        """
+        Test GET request to edit_booking view.
+        """
+        booking = Booking.objects.create(
+            user=self.user, table=self.table1,
+            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2
+        )
+        response = self.client.get(reverse('edit_booking', args=[booking.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/edit_booking.html')
+        self.assertIn('form', response.context)
+        self.assertEqual(response.context['booking'], booking)
+        self.assertEqual(response.context['form'].instance, booking)
+
+    def test_edit_booking_GET_unauthorized(self):
+        """
+        Test GET request to edit_booking for a booking not owned by the user.
+        """
+        other_user = User.objects.create_user(
+            username='other_guy', password='pass')
+        booking_other = Booking.objects.create(
+            user=other_user, table=self.table1,
+            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2
+        )
+        response = self.client.get(
+            reverse('edit_booking', args=[booking_other.pk]))
+        # Should return 404 if not found for user
+        self.assertEqual(response.status_code, 404)
+
+    def test_edit_booking_POST_success(self):
+        booking = Booking.objects.create(
+            user=self.user,
+            table=self.table1,
+            booking_date=self.future_date,
+            booking_time=self.booking_time,
+            number_of_guests=2,
+            notes="Initial notes"
+        )
+
+        new_guests = 3
+        new_time = time(20, 0)  # 8 PM
+
+        url = reverse('edit_booking', kwargs={'booking_id': booking.id})
+        form_data = {
+            'booking_date': self.future_date.isoformat(),
+            'booking_time': new_time.strftime('%H:%M'),
+            'number_of_guests': new_guests,
+            'notes': 'Updated notes for 3 people',
+        }
+
+        response = self.client.post(url, form_data, follow=False)
+
+        self.assertEqual(response.status_code, 302)  # Expect redirect
+        self.assertRedirects(response, reverse('my_bookings'))
+
+        booking.refresh_from_db()
+        self.assertEqual(booking.number_of_guests, new_guests)
+        self.assertEqual(booking.booking_time, new_time)
+        self.assertEqual(booking.notes, 'Updated notes for 3 people')
+
 
     
