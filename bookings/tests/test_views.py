@@ -80,3 +80,29 @@ class PublicViewsTest(TestCase):
         self.assertFormError(
             form, 'password2', "The two password fields didn’t match.")
         self.assertEqual(User.objects.count(), initial_user_count)
+
+
+class AuthenticatedViewsTest(TestCase):
+    """
+    Tests for views requiring user authentication.
+    """
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(
+            username='activeuser', password='password123')
+        cls.table1 = Table.objects.create(number=1, capacity=2)
+        cls.table2 = Table.objects.create(number=2, capacity=4)
+        cls.future_date = date.today() + timedelta(days=7)
+        cls.booking_time = time(19, 0)  # 7 PM
+
+    def setUp(self):
+        self.client.login(username='activeuser', password='password123')
+        # Reset current time for consistent testing of past/future bookings
+        self.mock_now = datetime.combine(
+            date.today(), time(12, 0))  # Mid-day today
+        self.patcher = patch('django.utils.timezone.now',
+                             return_value=timezone.make_aware(self.mock_now))
+        self.mock_timezone_now = self.patcher.start()
+
+    def tearDown(self):
+        self.patcher.stop()
