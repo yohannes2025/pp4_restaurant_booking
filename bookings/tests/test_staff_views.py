@@ -8,6 +8,8 @@ from datetime import date, time, timedelta, datetime
 from django.utils import timezone
 from bookings.models import Table, Booking
 from bookings.models import Table
+from django.contrib.admin.views.decorators import staff_member_required
+
 
 User = get_user_model()
 
@@ -126,3 +128,70 @@ class StaffViewsTest(TestCase):
         # Total tables
         self.assertEqual(
             response.context['total_tables'], Table.objects.count())
+
+    def test_staff_booking_list_access(self):
+        """
+        Test access to staff booking list for staff and non-staff.
+        """
+        self.client.login(username='staffuser', password='password123')
+        response = self.client.get(reverse('staff_booking_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/staff_booking_list.html')
+        self.assertIn('bookings', response.context)
+        self.assertEqual(
+            response.context['bookings'].paginator.count, Booking.objects.count())
+
+        self.client.logout()
+        self.client.login(username='normaluser', password='password123')
+        response = self.client.get(reverse('staff_booking_list'))
+        # Redirect due to @staff_member_required
+        self.assertEqual(response.status_code, 302)
+
+    def test_staff_booking_list_search_and_filters(self):
+        """
+        Test search and filter functionality on staff booking list.
+        """
+        self.client.login(username='staffuser', password='password123')
+
+        # Search by username
+        response = self.client.get(
+            reverse('staff_booking_list'), {'q': 'normaluser'})
+        # All bookings are by normaluser
+        self.assertEqual(len(response.context['bookings']), 4)
+
+        # Filter by status
+        response = self.client.get(reverse('staff_booking_list'), {
+                                   'status': 'confirmed'})
+        self.assertEqual(len(response.context['bookings']), 1)
+        self.assertEqual(
+            response.context['bookings'][0], self.booking_tomorrow_confirmed)
+
+        # Filter by date
+        response = self.client.get(reverse('staff_booking_list'), {
+                                   'date': self.today.isoformat()})
+        self.assertEqual(len(response.context['bookings']), 1)
+        self.assertEqual(
+            response.context['bookings'][0], self.booking_today_pending)
+
+        # Combined filters (tomorrow's confirmed booking)
+        response = self.client.get(reverse('staff_booking_list'), {
+            'q': 'normaluser',
+            'status': 'confirmed',
+            'date': self.tomorrow.isoformat()
+        })
+        self.assertEqual(len(response.context['bookings']), 1)
+        self.assertEqual(
+            response.context['bookings'][0], self.booking_tomorrow_confirmed)
+
+        # Invalid date format
+        response = self.client.get(reverse('staff_booking_list'), {
+                                   'date': '2024-02-30'})  # Invalid date
+        self.assertEqual(response.status_code, 200)  # Still renders page
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(
+            str(messages[0]), "Invalid date format. Please use YYYY-MM-DD.")
+        # date_filter should be reset
+        self.assertFalse(response.context['date_filter'])
+    
+    
