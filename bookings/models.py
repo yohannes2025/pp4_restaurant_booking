@@ -1,6 +1,7 @@
 from django.db import models
-from django.contrib.auth.models import User  # Built-in user model
-from datetime import date, time  # Used for potential custom logic
+from django.contrib.auth.models import User
+from datetime import date, time
+from django.db import models
 
 
 class Table(models.Model):
