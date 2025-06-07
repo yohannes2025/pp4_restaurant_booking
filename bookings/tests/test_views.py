@@ -295,5 +295,76 @@ class AuthenticatedViewsTest(TestCase):
         self.assertEqual(booking.booking_time, new_time)
         self.assertEqual(booking.notes, 'Updated notes for 3 people')
 
+    def test_cancel_booking_POST_success(self):
+        """
+        Test successful booking cancellation (soft-delete by setting status).
+        """
+        booking = Booking.objects.create(
+            user=self.user, table=self.table1,
+            booking_date=timezone.now().date() + timedelta(days=1),
+            booking_time=(timezone.now() + timedelta(hours=3)).time(),
+            number_of_guests=2, status='pending'
+        )
+        url = reverse('cancel_booking', kwargs={'booking_id': booking.id})
+        response = self.client.post(url, follow=True)
+
+        # Check redirection
+        self.assertRedirects(response, reverse('my_bookings'))
+
+        # Check status updated (soft-delete)
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, 'cancelled')
+
+        # Check message
+        messages = list(response.context['messages'])
+        self.assertTrue(any("successfully cancelled" in str(m)
+                        for m in messages))
+
+    def test_cancel_booking_POST_too_close_to_time(self):
+        """
+        Test cancellation denied if too close to reservation time.
+        """
+        # Create a booking that is 1 hour from now
+        soon_booking_datetime = timezone.now() + timedelta(hours=1)
+        booking = Booking.objects.create(
+            user=self.user, table=self.table1,
+            booking_date=soon_booking_datetime.date(),
+            booking_time=soon_booking_datetime.time(),
+            number_of_guests=2, status='pending'
+        )
+        url = reverse('cancel_booking', kwargs={'booking_id': booking.id})
+        response = self.client.post(url, follow=True)
+        self.assertEqual(response.status_code, 200)  # Still redirects
+        self.assertRedirects(response, reverse('my_bookings'))
+        booking.refresh_from_db()
+        self.assertEqual(booking.status, 'pending')  # Status should not change
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(
+            messages[0]), "Bookings cannot be cancelled within 2 hours of the reservation time.")
+
+    def test_cancel_booking_POST_already_cancelled(self):
+        """
+        Test cancellation of an already cancelled booking.
+        """
+        booking = Booking.objects.create(
+            user=self.user,
+            table=self.table1,
+            booking_date=(timezone.now() + timedelta(days=1)).date(),
+            booking_time=(timezone.now() + timedelta(days=1)).time(),
+            number_of_guests=2,
+            status='cancelled'
+        )
+        url = reverse('cancel_booking', args=[booking.pk])
+        response = self.client.post(url, follow=False)
+
+        # This must be 302 because the view should redirect
+        self.assertEqual(response.status_code, 302)
+
+        # Optional: follow the redirect and check messages if needed
+        response = self.client.post(url, follow=True)
+        messages = list(response.context['messages'])
+        self.assertIn("already", str(messages[0]))
+        self.assertIn("cancelled", str(messages[0]).lower())
 
     
