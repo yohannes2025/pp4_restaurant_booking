@@ -1,4 +1,6 @@
 # bookings/tests/test_staff_views.py
+from bookings.models import Table, Booking # Adjust imports as needed
+from django.utils import timezone # For timezone.now().date()
 from django.contrib.auth.models import User
 from bookings.models import Table
 from django.test import TestCase, Client
@@ -290,3 +292,97 @@ class StaffViewsTest(TestCase):
         self.assertContains(
             response, "Please correct the errors in the form when adding a table.")
         self.assertEqual(Table.objects.count(), 3)
+    
+    def test_staff_table_edit_GET(self):
+        """
+        Test GET request to staff table edit view.
+        """
+        self.client.login(username='staffuser', password='password123')
+        response = self.client.get(
+            reverse('staff_table_edit', args=[self.table1.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'bookings/staff_table_edit.html')
+        self.assertIn('form', response.context)
+        self.assertEqual(response.context['table'], self.table1)
+        self.assertEqual(response.context['form'].instance, self.table1)
+
+    # def generate_unique_username(self, base='staffuser'):
+    #     """Generate a unique username."""
+    #     return f"{base}_{uuid.uuid4().hex[:8]}"
+
+    def test_staff_table_delete_POST_success(self):
+        # Create a new table with a unique number
+        table_to_delete = Table.objects.create(number=200, capacity=4)
+
+        initial_table_count = Table.objects.count()
+
+        # Send POST request to delete the table
+        response = self.client.post(
+            reverse('staff_table_delete', args=[table_to_delete.pk])
+        )
+
+        # Assert redirect
+        self.assertEqual(response.status_code, 302)
+
+        # Check if the table is deleted
+        exists_after_delete = Table.objects.filter(
+            pk=table_to_delete.pk).exists()
+        self.assertFalse(exists_after_delete,
+                         "Table still exists after delete.")
+
+        # Check count decreased
+        post_delete_count = Table.objects.count()
+        self.assertEqual(
+            post_delete_count,
+            initial_table_count - 1,
+            f"Expected {initial_table_count - 1} tables, found {post_delete_count}"
+        )
+
+
+    def test_staff_table_delete_POST_with_active_bookings(self):
+        # Ensure staff user is logged in
+        self.client.login(username='teststaffuser', password='testpassword')
+
+        # Create a fresh booking for table1 within this test.
+        active_booking_for_table1 = Booking.objects.create(
+            user=self.normal_user,
+            table=self.table1,
+            booking_date=timezone.now().date() + timedelta(days=10),
+            booking_time=time(18, 0),
+            number_of_guests=3,
+            status='confirmed'
+        )
+        print(
+            f"DEBUG TEST: Created booking {active_booking_for_table1.pk} for table {self.table1.pk}")
+
+        # FIX: Change booking_set to bookings
+        print(
+            f"DEBUG TEST: Table {self.table1.pk} has {self.table1.bookings.count()} related bookings.")
+
+        initial_table_count = Table.objects.count()
+
+        url = reverse('staff_table_delete', args=[self.table1.pk])
+        response = self.client.post(url, follow=True)  # Keep follow=True
+
+        self.assertEqual(response.status_code, 200,
+                        "Expected a 200 OK status after redirect.")
+
+        self.assertEqual(Table.objects.count(), initial_table_count,
+                        "Table count changed when it should not have.")
+        self.assertTrue(Table.objects.filter(
+            pk=self.table1.pk).exists(), "Table was unexpectedly deleted.")
+
+        messages = list(response.context['messages'])
+        self.assertEqual(len(
+            messages), 1, f"Expected 1 message, but got {len(messages)}: {[str(m) for m in messages]}")
+
+        expected_message_part = f"Cannot delete table {self.table1.number} because it has active bookings."
+        self.assertIn(
+            expected_message_part, str(messages[0]),
+            f"Expected message '{expected_message_part}' not found. Actual: {str(messages[0])}"
+        )
+
+        self.assertTemplateUsed(response, 'bookings/staff_table_list.html')
+
+        # Clean up the specific booking created by this test
+        active_booking_for_table1.delete()

@@ -564,32 +564,38 @@ def staff_table_edit(request, table_id):
 
 @staff_member_required
 def staff_table_delete(request, table_id):
-    """Delete a table."""
-
     table = get_object_or_404(Table, id=table_id)
 
     if request.method == 'POST':
+        # Check for active bookings
+        active_bookings = Booking.objects.filter(
+            table=table,
+            status__in=['confirmed', 'pending']  # or your actual active statuses
+        )
 
-        try:
-
-            table.delete()
-
-            messages.success(
-                request, f"Table {table.number} deleted successfully.")
-
-        except Exception as e:  # Catch any exception for now
-
+        if active_bookings.exists():
+            # Do NOT delete; set error message
             messages.error(
-                request, f"Error deleting table {table.number}: {e}. Ensure no bookings are linked to this table.")
+                request,
+                f"Cannot delete table {table.number} because it has active bookings."
+            )
+            return redirect('staff_table_list')
+
+        # No active bookings, safe to delete
+        try:
+            table.delete()
+            messages.success(
+                request, f"Table {table.number} deleted successfully."
+            )
+        except Exception as e:
+            messages.error(
+                request, f"Error deleting table {table.number}: {e}"
+            )
 
         return redirect('staff_table_list')
-
     else:
-
-        # If a GET request comes to delete, redirect to list or show confirmation page
-
+        # For GET or other methods, show warning
         messages.warning(
-            request, "Invalid request to delete table. Please confirm deletion via POST.")
-
+            request, "Invalid request to delete table. Please delete via POST."
+        )
         return redirect('staff_table_list')
-    
