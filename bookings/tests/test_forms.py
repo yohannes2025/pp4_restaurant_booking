@@ -228,3 +228,44 @@ class AvailabilityFormTest(TestCase):
             "Ensure this value is greater than or equal to 1.",
             form.errors["num_guests"]
         )
+
+
+class BookingStatusUpdateFormTest(TestCase):
+    """
+    Tests for the BookingStatusUpdateForm (for staff).
+    """
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = User.objects.create_user(
+            username='stafftest', password='password')
+        cls.table = Table.objects.create(number=1, capacity=4)
+        cls.booking = Booking.objects.create(
+            user=cls.user,
+            table=cls.table,
+            booking_date=date.today() + timedelta(days=1),
+            booking_time=time(12, 0),
+            number_of_guests=2,
+            status='pending'
+        )
+
+    def test_valid_status_update_form(self):
+        form_data = {
+            'status': 'confirmed',
+            'notes': 'Guest called to confirm.'
+        }
+        form = BookingStatusUpdateForm(data=form_data, instance=self.booking)
+        self.assertTrue(form.is_valid())
+        updated_booking = form.save()
+        self.assertEqual(updated_booking.status, 'confirmed')
+        self.assertEqual(updated_booking.notes, 'Guest called to confirm.')
+
+    def test_invalid_status_update_form_choice(self):
+        form_data = {
+            'status': 'invalid_status',  # Invalid choice
+            'notes': 'Some notes.'
+        }
+        form = BookingStatusUpdateForm(data=form_data, instance=self.booking)
+        self.assertFalse(form.is_valid())
+        self.assertIn('status', form.errors)
+        self.assertIn(
+            "Select a valid choice. invalid_status is not one of the available choices.", form.errors['status'])
