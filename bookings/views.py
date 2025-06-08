@@ -1,4 +1,5 @@
 # Standard library imports
+from django.contrib.auth import authenticate, login
 from datetime import datetime, timedelta, time
 
 # Third-party imports
@@ -33,14 +34,19 @@ def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            form.save()
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password1')
 
-            # FIX: Set backend explicitly
-            user.backend = 'django.contrib.auth.backends.ModelBackend'
-
-            login(request, user)
-            messages.success(request, "Registration successful. Welcome!")
-            return redirect('home')
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, "Registration successful. Welcome!")
+                return redirect('home')
+            else:
+                messages.error(
+                    request, "Authentication failed after registration.")
+                return render(request, 'registration/register.html', {'form': form})
         else:
             messages.error(
                 request, "Registration failed. Please correct the errors below.")
@@ -48,6 +54,7 @@ def register(request):
     else:
         form = CustomUserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
 
 
 @login_required
