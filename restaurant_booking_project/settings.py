@@ -106,7 +106,8 @@ WSGI_APPLICATION = 'restaurant_booking_project.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///db.sqlite3',  # fallback for local dev
+        # fallback for local dev
+        default=os.environ.get('DATABASE_URL', 'sqlite:///db.sqlite3'),
         conn_max_age=600,
         ssl_require=True
     )
