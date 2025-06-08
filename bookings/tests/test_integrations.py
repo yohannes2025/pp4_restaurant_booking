@@ -118,3 +118,58 @@ class UserBookingFlowIntegrationTest(TestCase):
         self.assertContains(response_cancel, "cancelled")
         # Still shows notes
         self.assertContains(response_cancel, "Updated notes for more guests")
+
+    def test_booking_and_availability_check_interplay(self):
+        """
+        Tests that booking a table correctly affects availability checks.
+        """
+        # Step 1: Check availability for a future slot (should show tables)
+        check_date = self.future_date
+        check_time = self.booking_time
+        form_data_check = {
+            'check_date': check_date.isoformat(),
+            'check_time': check_time.strftime('%H:%M'),
+            'num_guests': 2,
+        }
+        response_initial_check = self.client.post(
+            reverse('check_availability'), form_data_check)
+        self.assertEqual(response_initial_check.status_code, 200)
+        # table1 and table2 available for 2 guests
+        self.assertContains(response_initial_check,
+                            "Found 2 table(s) available.")
+
+        # Step 2: Make a booking that occupies one table
+        form_data_book = {
+            'booking_date': check_date.isoformat(),
+            'booking_time': check_time.strftime('%H:%M'),
+            'number_of_guests': 2,
+            'notes': 'Booking one table',
+        }
+        # No need to follow, just make the booking
+        self.client.post(reverse('make_booking'), form_data_book)
+
+        # Step 3: Check availability again for the same slot (should show fewer tables)
+        response_after_book_check = self.client.post(
+            reverse('check_availability'), form_data_check)
+        self.assertEqual(response_after_book_check.status_code, 200)
+        # Only table2 should be available for 2 guests
+        self.assertContains(response_after_book_check,
+                            "Found 1 table(s) available.")
+        self.assertContains(response_after_book_check,
+                            f"Table {self.table2.number}")
+        available_section = response_after_book_check.content.decode().split(
+            "Available Tables:")[-1]
+        self.assertNotIn("Table 1", available_section)
+
+        # Step 4: Cancel the booking
+        booking = Booking.objects.first()
+        response_cancel = self.client.post(
+            reverse('cancel_booking', args=[booking.pk]))
+
+        # Step 5: Check availability one last time (should show tables are available again)
+        response_after_cancel_check = self.client.post(
+            reverse('check_availability'), form_data_check)
+        self.assertEqual(response_after_cancel_check.status_code, 200)
+        # Both tables available again
+        self.assertContains(response_after_cancel_check,
+                            "Found 2 table(s) available.")
