@@ -138,14 +138,17 @@ class BookingStatusUpdateForm(forms.ModelForm):
 
 # Form for staff to add/edit table records
 class TableForm(forms.ModelForm):
+    number = forms.IntegerField(
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+        label='Table Number'
+    )
+    capacity = forms.IntegerField(
+        min_value=1,
+        widget=forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
+        label='Seating Capacity'
+    )
+
     class Meta:
         model = Table
         fields = ['number', 'capacity']
-        widgets = {
-            'number': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
-            'capacity': forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
-        }
-        labels = {
-            'number': 'Table Number',
-            'capacity': 'Seating Capacity',
-        }

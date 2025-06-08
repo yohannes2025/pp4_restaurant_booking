@@ -269,3 +269,45 @@ class BookingStatusUpdateFormTest(TestCase):
         self.assertIn('status', form.errors)
         self.assertIn(
             "Select a valid choice. invalid_status is not one of the available choices.", form.errors['status'])
+
+
+class TableFormTest(TestCase):
+    """
+    Tests for the TableForm (for staff).
+    """
+
+    def test_valid_table_form_data(self):
+        form_data = {
+            'number': 101,
+            'capacity': 8,
+        }
+        form = TableForm(data=form_data)
+        self.assertTrue(form.is_valid())
+        table = form.save()
+        self.assertEqual(table.number, 101)
+        self.assertEqual(table.capacity, 8)
+        self.assertEqual(Table.objects.count(), 1)
+
+    def test_duplicate_table_number(self):
+        Table.objects.create(number=101, capacity=4)
+        form_data = {
+            'number': 101,
+            'capacity': 6,
+        }
+        form = TableForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('number', form.errors)
+        self.assertIn("Table with this Number already exists.",
+                      form.errors['number'])
+
+
+    def test_table_form_zero_capacity(self):
+        form_data = {
+            'number': 102,
+            'capacity': 0,  # Invalid capacity
+        }
+        form = TableForm(data=form_data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('capacity', form.errors)
+        self.assertIn(
+            "Ensure this value is greater than or equal to 1.", form.errors['capacity'])
