@@ -1,1 +1,1 @@
-web: gunicorn pp4_restaurant_booking.wsgi
+web: gunicorn restaurant_booking_project.wsgi
