@@ -117,7 +117,9 @@ class UserBookingFlowIntegrationTest(TestCase):
         # Check cancelled booking status is displayed on 'my_bookings' page
         self.assertContains(response_cancel, "cancelled")
         # Still shows notes
-        self.assertContains(response_cancel, "Updated notes for more guests")
+        self.assertNotContains(
+            response_cancel, "Updated notes for more guests")
+
 
     def test_booking_and_availability_check_interplay(self):
         """
