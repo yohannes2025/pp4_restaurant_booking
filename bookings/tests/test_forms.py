@@ -79,7 +79,7 @@ class BookingFormTest(TestCase):
         # Check error is under '__all__' because clean() raises ValidationError
         self.assertIn('booking_date', form.errors)
 
-        self.assertIn('Booking date cannot be in the past.',
+        self.assertIn('Booking date and time cannot be in the past.',
                       form.errors['booking_date'])
 
     def test_booking_form_time_out_of_range(self):
