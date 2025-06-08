@@ -23,8 +23,10 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ upcoming_active_bookings_count }}</h5>
                     <p class="card-text">Bookings pending or confirmed for today/future.</p>
-                    <a href="{% url 'staff_booking_list' %}?status=pending" class="btn btn-warning btn-sm">Review Pending</a>
-                    <a href="{% url 'staff_booking_list' %}?status=confirmed" class="btn btn-warning btn-sm ms-2">Review Confirmed</a>
+                    <div class="d-flex flex-wrap gap-2"> {# This is the key change #}
+                        <a href="{% url 'staff_booking_list' %}?status=pending" class="btn btn-warning btn-sm">Review Pending</a>
+                        <a href="{% url 'staff_booking_list' %}?status=confirmed" class="btn btn-warning btn-sm">Review Confirmed</a>
+                    </div>
                 </div>
             </div>
         </div>
