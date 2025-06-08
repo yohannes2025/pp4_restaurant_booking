@@ -140,7 +140,8 @@ def my_bookings(request):
     upcoming_bookings = Booking.objects.filter(
         user=request.user,
         booking_date__gte=timezone.now().date()
-    ).exclude(status__in=['cancelled', 'no-show', 'completed']).order_by('booking_date', 'booking_time')
+    ).order_by('booking_date', 'booking_time')
+
 
     # Past bookings: date is in the past, or date is today but time is in the past
     past_bookings = Booking.objects.filter(
