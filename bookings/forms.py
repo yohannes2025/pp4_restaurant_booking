@@ -13,8 +13,8 @@ from .models import Booking, Table
 
 class CustomUserCreationForm(UserCreationForm):
     """
-    A custom user registration form extending Django's built-in UserCreationForm.
-    Includes username, email, and password fields.
+    A custom user registration form extending Django's built-in
+    UserCreationForm. Includes username, email, and password fields.
     """
     class Meta:
         model = User
@@ -28,7 +28,11 @@ class BookingForm(forms.ModelForm):
     """
     booking_date = forms.DateField(
         widget=forms.DateInput(
-            attrs={'type': 'date', 'min': date.today().isoformat(), 'class': 'form-control'}),
+            attrs={
+                'type': 'date',
+                'min': date.today().isoformat(),
+                'class': 'form-control'
+                }),
         initial=date.today(),
         label='Preferred Date'
     )
@@ -54,8 +58,8 @@ class BookingForm(forms.ModelForm):
 
     def clean(self):
         """
-        Validates booking date/time is not in the past and within restaurant hours.
-        Ensures number of guests is at least 1.
+        Validates booking date/time is not in the past and within
+        restaurant hours. Ensures number of guests is at least 1.
         """
         cleaned_data = super().clean()
         booking_date = cleaned_data.get('booking_date')
@@ -69,11 +73,13 @@ class BookingForm(forms.ModelForm):
 
             if booking_datetime < timezone.now() - timedelta(minutes=1):
                 self.add_error(
-                    'booking_date', "Booking date and time cannot be in the past.")
+                    'booking_date', "Booking date and time "
+                    "cannot be in the past.")
 
             if not (time(9, 0) <= booking_time <= time(22, 0)):
                 self.add_error(
-                    'booking_time', "Booking time must be between 9:00 AM and 10:00 PM.")
+                    'booking_time', "Booking time must be between "
+                    "9:00 AM and 10:00 PM.")
 
         if number_of_guests is not None and number_of_guests <= 0:
             self.add_error('number_of_guests',
@@ -90,7 +96,11 @@ class AvailabilityForm(forms.Form):
     check_date = forms.DateField(
         label='Date',
         widget=forms.DateInput(
-            attrs={'type': 'date', 'min': date.today().isoformat(), 'class': 'form-control'}),
+            attrs={
+                'type': 'date',
+                'min': date.today().isoformat(),
+                'class': 'form-control'
+                }),
         initial=date.today()
     )
     check_time = forms.TimeField(
@@ -108,7 +118,8 @@ class AvailabilityForm(forms.Form):
 
     def clean(self):
         """
-        Ensures selected date/time is not in the past and falls within service hours.
+        Ensures selected date/time is not in the past
+        and falls within service hours.
         """
         cleaned_data = super().clean()
         check_date = cleaned_data.get('check_date')
@@ -141,7 +152,12 @@ class BookingStatusUpdateForm(forms.ModelForm):
         model = Booking
         fields = ['status', 'notes']
         widgets = {
-            'notes': forms.Textarea(attrs={'rows': 4, 'class': 'form-control'}),
+            'notes': forms.Textarea(
+                attrs={
+                    'rows': 4,
+                    'class': 'form-control'
+                    }
+                ),
             'status': forms.Select(attrs={'class': 'form-select'}),
         }
         labels = {
@@ -152,7 +168,8 @@ class BookingStatusUpdateForm(forms.ModelForm):
 
 class TableForm(forms.ModelForm):
     """
-    Form for staff to create or update table details including number and capacity.
+    Form for staff to create or update table
+    details including number and capacity.
     """
     number = forms.IntegerField(
         min_value=1,

@@ -64,4 +64,7 @@ class Booking(models.Model):
         ordering = ['booking_date', 'booking_time']
 
     def __str__(self):
-        return f"Booking by {self.user.username} for Table {self.table.number} on {self.booking_date} at {self.booking_time} ({self.status})"
+        return (
+            f"Booking by {self.user.username} for Table {self.table.number} "
+            f"on {self.booking_date} at {self.booking_time} ({self.status})"
+        )
