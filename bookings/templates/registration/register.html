@@ -1,7 +1,5 @@
 {% extends 'bookings/base.html' %}  {# Base template for public-facing pages #}
-
 {% block title %}Register{% endblock %}
-
 {% block content %}
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -19,21 +17,15 @@
                                 <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
                                 {{ field }}
                                 {# Show help text if present #}
-                                {% if field.help_text %}
-                                    <div class="form-text">{{ field.help_text }}</div>
-                                {% endif %}
+                                {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
                                 {# Display field-specific validation errors #}
-                                {% for error in field.errors %}
-                                    <div class="invalid-feedback d-block">{{ error }}</div>
-                                {% endfor %}
+                                {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                             </div>
                         {% endfor %}
                         {# Display non-field errors such as global form errors #}
                         {% if form.non_field_errors %}
                             <div class="alert alert-danger">
-                                {% for error in form.non_field_errors %}
-                                    <p>{{ error }}</p>
-                                {% endfor %}
+                                {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
                             </div>
                         {% endif %}
                         <button type="submit" class="btn btn-primary">Register</button>

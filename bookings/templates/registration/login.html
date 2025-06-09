@@ -1,7 +1,5 @@
 {% extends 'bookings/base.html' %}  {# Base template for all public pages #}
-
 {% block title %}Login{% endblock %}
-
 {% block content %}
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -12,11 +10,8 @@
                 <div class="card-body">
                     {# Show error alert if form submission failed #}
                     {% if form.errors %}
-                        <div class="alert alert-danger">
-                            Your username and password didn't match. Please try again.
-                        </div>
+                        <div class="alert alert-danger">Your username and password didn't match. Please try again.</div>
                     {% endif %}
-
                     {# Login form with POST method #}
                     <form method="post" action="{% url 'login' %}">
                         {% csrf_token %}  {# CSRF protection #}
@@ -32,7 +27,6 @@
                         {# Hidden input to redirect after login #}
                         <input type="hidden" name="next" value="{{ next }}">
                     </form>
-
                     <p class="mt-3">
                         {# Link to password reset page #}
                         <a href="{% url 'password_reset' %}">Forgot password?</a>
@@ -40,7 +34,7 @@
                     <p>
                         {# Link to registration page for new users #}
                         Don't have an account? <a href="{% url 'register' %}">Register here</a>.
-                    </p> 
+                    </p>
                 </div>
             </div>
         </div>

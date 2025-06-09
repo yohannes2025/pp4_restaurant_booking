@@ -1,15 +1,10 @@
 {% extends 'bookings/staff_base.html' %}  {# Base template for staff pages #}
-
 {% block title %}Manage Tables{% endblock %}
-
 {% block content %}
     <h1 class="mb-4">Manage Restaurant Tables</h1>
-
     <!-- Form to add a new table -->
     <div class="card mb-4 shadow-sm">
-        <div class="card-header">
-            Add New Table
-        </div>
+        <div class="card-header">Add New Table</div>
         <div class="card-body">
             <form method="post" class="row g-3">
                 {% csrf_token %}  {# CSRF protection #}
@@ -17,24 +12,18 @@
                 <div class="col-md-6">
                     <label for="{{ form.number.id_for_label }}" class="form-label">{{ form.number.label }}</label>
                     {{ form.number }}
-                    {% for error in form.number.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
+                    {% for error in form.number.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                 </div>
                 <!-- Table capacity input -->
                 <div class="col-md-6">
                     <label for="{{ form.capacity.id_for_label }}" class="form-label">{{ form.capacity.label }}</label>
                     {{ form.capacity }}
-                    {% for error in form.capacity.errors %}
-                        <div class="invalid-feedback d-block">{{ error }}</div>
-                    {% endfor %}
+                    {% for error in form.capacity.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
                 </div>
                 <!-- Non-field errors (e.g. validation involving multiple fields) -->
                 {% if form.non_field_errors %}
                     <div class="col-12 alert alert-danger">
-                        {% for error in form.non_field_errors %}
-                            <p class="mb-0">{{ error }}</p>
-                        {% endfor %}
+                        {% for error in form.non_field_errors %}<p class="mb-0">{{ error }}</p>{% endfor %}
                     </div>
                 {% endif %}
                 <!-- Submit button -->
@@ -44,7 +33,6 @@
             </form>
         </div>
     </div>
-
     <!-- List of existing tables -->
     <h2 class="mt-5 mb-3">Existing Tables</h2>
     {% if tables %}
@@ -64,11 +52,18 @@
                             <td>{{ table.capacity }}</td>
                             <td>
                                 <!-- Edit button linking to edit page -->
-                                <a href="{% url 'staff_table_edit' table.id %}" class="btn btn-sm btn-warning me-2">Edit</a>
+                                <a href="{% url 'staff_table_edit' table.id %}"
+                                   class="btn btn-sm btn-warning me-2">Edit</a>
                                 <!-- Delete form with confirmation prompt -->
-                                <form action="{% url 'staff_table_delete' table.id %}" method="post" class="d-inline">
+                                <form action="{% url 'staff_table_delete' table.id %}"
+                                      method="post"
+                                      class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete Table {{ table.number }}? This cannot be undone and will affect related bookings!');">Delete</button>
+                                    <button type="submit"
+                                            class="btn btn-sm btn-danger"
+                                            onclick="return confirm('Are you sure you want to delete Table {{ table.number }}? This cannot be undone and will affect related bookings!');">
+                                        Delete
+                                    </button>
                                 </form>
                             </td>
                         </tr>
