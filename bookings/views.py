@@ -1,17 +1,16 @@
 # Standard library imports
-from django.contrib.auth import authenticate, login
 from datetime import datetime, timedelta, time
 
-# Third-party imports
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth.decorators import login_required
+# Django imports
 from django.contrib import messages
-from django.db import transaction
-from django.utils import timezone
-from django.contrib.auth import login
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth import authenticate, login
+from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db import transaction
 from django.db.models import Q
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils import timezone
 
 # Local application imports
 from .models import Booking, Table
@@ -24,13 +23,13 @@ from .forms import (
 )
 
 
-
 def home_view(request):
     """Render the homepage."""
     return render(request, 'bookings/home.html')
 
 
 def register(request):
+    """Handle user registration using a custom user creation form."""
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -56,10 +55,14 @@ def register(request):
     return render(request, 'registration/register.html', {'form': form})
 
 
-
 @login_required
 def make_booking(request):
-    """Handle the booking creation form."""
+    """
+    Handle booking creation for authenticated users.
+    
+    Validates time slot, checks table availability based on guest count and timing,
+    and saves the booking if a suitable table is available.
+    """
     if request.method == 'POST':
         form = BookingForm(request.POST)
         if form.is_valid():
@@ -142,8 +145,12 @@ def make_booking(request):
 
 @login_required
 def my_bookings(request):
-    """Display a list of the current user's bookings."""
-    # Upcoming bookings: date is today or in the future, and not cancelled/completed
+    """
+    Display the current user's upcoming and past bookings.
+    
+    Upcoming: bookings from today onward (excluding cancelled/completed).
+    Past: earlier bookings or bookings today but in the past time.
+    """
     upcoming_bookings = Booking.objects.filter(
         user=request.user,
         booking_date__gte=timezone.now().date()
@@ -169,7 +176,11 @@ def my_bookings(request):
 
 @login_required
 def edit_booking(request, booking_id):
-    """Allow a user to edit his/her existing booking."""
+    """
+    Allow users to edit their existing bookings.
+    
+    Ensures booking is not in the past and that the updated slot has an available table.
+    """
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
     if request.method == 'POST':
@@ -260,7 +271,11 @@ def edit_booking(request, booking_id):
 
 @login_required
 def cancel_booking(request, booking_id):
-    """Allow a user to cancel his/her booking."""
+    """
+    Allow users to cancel their bookings.
+    
+    Disallows cancellation within 2 hours of reservation and for already finalized bookings.
+    """
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
     # Prevent cancellation if the booking is too close to the time (e.g., within 2 hours)
@@ -286,7 +301,11 @@ def cancel_booking(request, booking_id):
 
 
 def check_availability(request):
-    """View to check table availability based on date, time, and guests, enforcing a ±2 hour rule."""
+    """
+    Check table availability based on date, time, and number of guests.
+    
+    Applies a ±2 hour conflict window to ensure time buffer between bookings.
+    """
     available_tables = []
 
     if request.method == 'POST':
@@ -336,7 +355,12 @@ def check_availability(request):
 
 
 def staff_dashboard(request):
-    # Ensure only staff can access
+    """
+    Display key statistics for staff including:
+    - Count of upcoming active bookings.
+    - Confirmed bookings for today.
+    - Total number of tables.
+    """
     if not request.user.is_staff:
         # Redirect or show permission denied as appropriate
         return redirect('login')  # or use permission decorators
@@ -368,14 +392,15 @@ def staff_dashboard(request):
 
     return render(request, 'bookings/staff_dashboard.html', context)
 
-# Decorator for staff members (assuming you have this defined elsewhere or use is_staff check)
-
-
-# Staff Booking List View
 
 @staff_member_required
 def staff_booking_list(request):
-    """List all bookings for staff, with search and filters."""
+    """
+    Staff view to list all bookings with search and filter functionality.
+
+    Supports filtering by status, booking date, and keyword search (username/table/notes).
+    Includes pagination.
+    """
 
     bookings_list = Booking.objects.all().order_by(
         '-booking_date', '-booking_time')  # Get all bookings
@@ -457,7 +482,11 @@ def staff_booking_list(request):
 
 @staff_member_required
 def staff_booking_detail(request, booking_id):
-    """View and update details of a specific booking."""
+    """
+    View and update the status of a specific booking by staff.
+    
+    Displays booking detail and allows status updates through a form.
+    """
 
     booking = get_object_or_404(Booking, id=booking_id)
 
@@ -495,12 +524,12 @@ def staff_booking_detail(request, booking_id):
     return render(request, 'bookings/staff_booking_detail.html', context)
 
 
-# Staff Table List View
-
 @staff_member_required
 def staff_table_list(request):
     """
-    Displays a list of all restaurant tables and allows staff to add new ones.
+    Display all restaurant tables and allow staff to add new ones.
+    
+    Handles both displaying existing tables and creating new ones through a form.
     """
     tables = Table.objects.all().order_by('number')
 
@@ -524,11 +553,14 @@ def staff_table_list(request):
     }
     return render(request, 'bookings/staff_table_list.html', context)
 
-# Staff Table Edit View
 
 @staff_member_required
 def staff_table_edit(request, table_id):
-    """Edit an existing table."""
+    """
+    Allow staff to update the number and capacity of an existing table.
+    
+    Handles both GET (prefill form) and POST (update table).
+    """
 
     table = get_object_or_404(Table, id=table_id)  # Get the specific table
 
@@ -571,6 +603,11 @@ def staff_table_edit(request, table_id):
 
 @staff_member_required
 def staff_table_delete(request, table_id):
+    """
+    Allow staff to delete a table only if there are no active bookings associated.
+    
+    Prevents deletion if any pending or confirmed bookings exist for the table.
+    """
     table = get_object_or_404(Table, id=table_id)
 
     if request.method == 'POST':

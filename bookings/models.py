@@ -1,10 +1,13 @@
-from django.db import models
-from django.contrib.auth.models import User
 from datetime import date, time
+
+from django.contrib.auth.models import User
 from django.db import models
 
 
 class Table(models.Model):
+    """
+    Represents a restaurant table with a unique number and seating capacity.
+    """
     number = models.IntegerField(unique=True, help_text="Unique table number.")
     capacity = models.IntegerField(
         help_text="Maximum number of guests this table can accommodate.")
@@ -14,6 +17,10 @@ class Table(models.Model):
 
 
 class Booking(models.Model):
+    """
+    Represents a booking made by a user for a specific table, date, and time.
+    Includes guest count, optional notes, booking status, and timestamps.
+    """
     BOOKING_STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('confirmed', 'Confirmed'),

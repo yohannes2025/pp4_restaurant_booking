@@ -1,5 +1,5 @@
 # Standard library imports
-from datetime import date, time, datetime, timedelta
+from datetime import date, datetime, time, timedelta
 
 # Third-party imports
 from django import forms
@@ -11,15 +11,21 @@ from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from .models import Booking, Table
 
 
-# Custom user registration form using built-in User model
 class CustomUserCreationForm(UserCreationForm):
+    """
+    A custom user registration form extending Django's built-in UserCreationForm.
+    Includes username, email, and password fields.
+    """
     class Meta:
         model = User
         fields = ('username', 'email', 'password1', 'password2')
 
 
-# Form for creating/editing a booking
 class BookingForm(forms.ModelForm):
+    """
+    Form for users to create or edit a table booking.
+    Includes custom validation for time range, past booking, and guest number.
+    """
     booking_date = forms.DateField(
         widget=forms.DateInput(
             attrs={'type': 'date', 'min': date.today().isoformat(), 'class': 'form-control'}),
@@ -46,8 +52,11 @@ class BookingForm(forms.ModelForm):
         model = Booking
         fields = ['booking_date', 'booking_time', 'number_of_guests', 'notes']
 
-    # Custom validation for booking constraints
     def clean(self):
+        """
+        Validates booking date/time is not in the past and within restaurant hours.
+        Ensures number of guests is at least 1.
+        """
         cleaned_data = super().clean()
         booking_date = cleaned_data.get('booking_date')
         booking_time = cleaned_data.get('booking_time')
@@ -58,12 +67,10 @@ class BookingForm(forms.ModelForm):
                 booking_date, booking_time)
             booking_datetime = timezone.make_aware(booking_datetime_naive)
 
-            # Prevent bookings in the past
             if booking_datetime < timezone.now() - timedelta(minutes=1):
                 self.add_error(
                     'booking_date', "Booking date and time cannot be in the past.")
 
-            # Restrict booking time to restaurant hours
             if not (time(9, 0) <= booking_time <= time(22, 0)):
                 self.add_error(
                     'booking_time', "Booking time must be between 9:00 AM and 10:00 PM.")
@@ -75,8 +82,11 @@ class BookingForm(forms.ModelForm):
         return cleaned_data
 
 
-# Form to check table availability based on date, time, and party size
 class AvailabilityForm(forms.Form):
+    """
+    Form for checking table availability based on date, time, and guest count.
+    Validates future date/time and restaurant open hours.
+    """
     check_date = forms.DateField(
         label='Date',
         widget=forms.DateInput(
@@ -87,7 +97,7 @@ class AvailabilityForm(forms.Form):
         label='Time',
         widget=forms.TimeInput(
             attrs={'type': 'time', 'class': 'form-control'}),
-        initial=time(19, 0)  # Default to 7 PM
+        initial=time(19, 0)
     )
     num_guests = forms.IntegerField(
         label='Number of Guests',
@@ -96,8 +106,10 @@ class AvailabilityForm(forms.Form):
         initial=2
     )
 
-    # Validation to ensure check date/time is in the future and during open hours
     def clean(self):
+        """
+        Ensures selected date/time is not in the past and falls within service hours.
+        """
         cleaned_data = super().clean()
         check_date = cleaned_data.get('check_date')
         check_time = cleaned_data.get('check_time')
@@ -121,8 +133,10 @@ class AvailabilityForm(forms.Form):
         return cleaned_data
 
 
-# Form for staff to update booking status and notes
 class BookingStatusUpdateForm(forms.ModelForm):
+    """
+    Form for staff to update the status and notes of a booking.
+    """
     class Meta:
         model = Booking
         fields = ['status', 'notes']
@@ -136,8 +150,10 @@ class BookingStatusUpdateForm(forms.ModelForm):
         }
 
 
-# Form for staff to add/edit table records
 class TableForm(forms.ModelForm):
+    """
+    Form for staff to create or update table details including number and capacity.
+    """
     number = forms.IntegerField(
         min_value=1,
         widget=forms.NumberInput(attrs={'class': 'form-control', 'min': 1}),
