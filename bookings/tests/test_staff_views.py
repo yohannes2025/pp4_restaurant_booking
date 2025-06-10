@@ -289,9 +289,6 @@ class StaffViewsTest(TestCase):
             'capacity': 5
         }, follow=True)
 
-        # <-- Add this line to debug the actual response content
-        print(response.content.decode())
-
         self.assertEqual(response.status_code, 200)
 
         self.assertContains(
@@ -360,14 +357,6 @@ class StaffViewsTest(TestCase):
             number_of_guests=3,
             status='confirmed'
         )
-        print(
-            f"DEBUG TEST: Created booking {active_booking_for_table1.pk} "
-            f"for table {self.table1.pk}")
-
-        # FIX: Change booking_set to bookings
-        print(
-            f"DEBUG TEST: Table {self.table1.pk} has "
-            f"{self.table1.bookings.count()} related bookings.")
 
         initial_table_count = Table.objects.count()
 
