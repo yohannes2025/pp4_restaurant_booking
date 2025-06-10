@@ -1,19 +1,16 @@
 # bookings/tests/test_staff_views.py
 # Standard library imports
-from datetime import date, time, timedelta, datetime
+from datetime import time, timedelta
+import uuid
 
 # Django imports (third-party)
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import User
-from django.contrib.admin.views.decorators import staff_member_required
 
 # Local application imports
 from bookings.models import Table, Booking
-
-User = get_user_model()
 
 
 def generate_unique_username(base='testuser'):
@@ -222,7 +219,7 @@ class StaffViewsTest(TestCase):
         Test updating booking status from staff detail view.
         """
         self.client.login(username='staffuser', password='password123')
-        initial_status = self.booking_today_pending.status
+
         form_data = {
             'status': 'confirmed',
             'notes': 'Confirmed by staff.'

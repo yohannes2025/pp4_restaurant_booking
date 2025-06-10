@@ -345,8 +345,12 @@ def cancel_booking(request, booking_id):
     # Prevent cancelling already finalized bookings
     elif booking.status in ['cancelled', 'completed', 'no-show']:
         messages.warning(
-            request, f"This booking is already"
-            " {booking.get_status_display()}. Cannot cancel.")
+            request,
+            (
+                f"This booking is already {booking.get_status_display()}. "
+                "Cannot cancel."
+            )
+        )
     else:
         booking.status = 'cancelled'  # Soft delete: set status to cancelled
         booking.save()

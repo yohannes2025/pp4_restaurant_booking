@@ -377,7 +377,6 @@ class AuthenticatedViewsTest(TestCase):
         soon_booking_datetime = timezone.now() + timedelta(hours=1)
         booking = Booking.objects.create(
             user=self.user, table=self.table1,
-            booking_date=soon_booking_datetime.date(),
             booking_time=soon_booking_datetime.time(),
             number_of_guests=2, status='pending'
         )

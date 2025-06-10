@@ -1,11 +1,11 @@
 # Standard library imports
-from datetime import date, datetime, time, timedelta
+from datetime import date, time, timedelta, datetime
 
 # Third-party imports
 from django import forms
 from django.utils import timezone
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import UserCreationForm, UserChangeForm
+from django.contrib.auth.forms import UserCreationForm
 
 # Local application imports
 from .models import Booking, Table
@@ -67,8 +67,12 @@ class BookingForm(forms.ModelForm):
         number_of_guests = cleaned_data.get('number_of_guests')
 
         if booking_date and booking_time:
+            # Create the naive datetime object by combining date and time
             booking_datetime_naive = datetime.combine(
-                booking_date, booking_time)
+                booking_date,
+                booking_time
+            )
+
             booking_datetime = timezone.make_aware(booking_datetime_naive)
 
             if booking_datetime < timezone.now() - timedelta(minutes=1):
@@ -84,7 +88,6 @@ class BookingForm(forms.ModelForm):
         if number_of_guests is not None and number_of_guests <= 0:
             self.add_error('number_of_guests',
                            "Number of guests must be at least 1.")
-
         return cleaned_data
 
 

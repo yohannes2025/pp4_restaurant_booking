@@ -1,10 +1,9 @@
 # bookings/tests/test_forms.py
 # Standard library imports
-from datetime import date, time, timedelta, datetime
+from datetime import date, time, timedelta
 
 # Django imports (third-party)
 from django.test import TestCase
-from django import forms
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
@@ -135,19 +134,6 @@ class AvailabilityFormTest(TestCase):
         self.assertEqual(form.cleaned_data['check_time'], time(19, 0))
         self.assertEqual(form.cleaned_data['num_guests'], 2)
 
-    def test_valid_availability_form_data(self):
-        future_date = date.today() + timedelta(days=5)
-        form_data = {
-            'check_date': future_date.isoformat(),
-            'check_time': '19:00',
-            'num_guests': 2,
-        }
-        form = AvailabilityForm(data=form_data)
-        self.assertTrue(form.is_valid())
-        self.assertEqual(form.cleaned_data['check_date'], future_date)
-        self.assertEqual(form.cleaned_data['check_time'], time(19, 0))
-        self.assertEqual(form.cleaned_data['num_guests'], 2)
-
     def test_availability_form_past_date_time(self):
         # 1. Test with a past *date* and a time that is within
         # restaurant hours (e.g., 12:00 PM).
@@ -169,16 +155,6 @@ class AvailabilityFormTest(TestCase):
         self.assertIn(
             "You cannot check availability for a past date and time.",
             form.errors['__all__'])
-
-        # Test with the *current date* but a
-        # *past time* (within restaurant hours).
-        current_date_today = date.today()
-
-        # A time clearly in the past but within restaurant hours.
-        test_past_time_on_current_date = time(10, 0)  # 10 AM
-
-        # Get an aware datetime for 1 hour ago.
-        one_hour_ago = timezone.now() - timedelta(hours=1)
 
         # Create a datetime object that is explicitly in
         # the past and also within restaurant hours.

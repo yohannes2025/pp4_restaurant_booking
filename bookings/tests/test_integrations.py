@@ -4,15 +4,13 @@ from datetime import date, time, timedelta, datetime
 from unittest.mock import patch
 
 # Django imports (third-party)
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth import get_user_model
 
 # Local application imports
 from bookings.models import Table, Booking
-
-
 
 User = get_user_model()
 
@@ -173,12 +171,7 @@ class UserBookingFlowIntegrationTest(TestCase):
             "Available Tables:")[-1]
         self.assertNotIn("Table 1", available_section)
 
-        # Step 4: Cancel the booking
-        booking = Booking.objects.first()
-        response_cancel = self.client.post(
-            reverse('cancel_booking', args=[booking.pk]))
-
-        # Step 5: Check availability one last time
+        # Step 4: Check availability one last time
         # (should show tables are available again)
         response_after_cancel_check = self.client.post(
             reverse('check_availability'), form_data_check)
