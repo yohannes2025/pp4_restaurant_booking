@@ -14,7 +14,6 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 import dj_database_url
-from dotenv import load_dotenv
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
@@ -42,8 +41,21 @@ else:
     ALLOWED_HOSTS = []  # Default to empty list
     if not DEBUG:  # Only raise error if in production (DEBUG=False)
         raise ImproperlyConfigured(
-            "ALLOWED_HOSTS environment variable must be set in production when DEBUG is False.")
+            "ALLOWED_HOSTS environment variable must be set in production "
+            "when DEBUG is False."
+        )
 
+# --- START DEBUG PRINTS ---
+print("\n--- DEBUGGING ENVIRONMENT VARIABLES ---")
+print(f"os.environ.get('DEBUG') from .env: '{os.environ.get('DEBUG')}'")
+print(f"Calculated DEBUG variable in settings.py: {DEBUG}")
+print(
+    f"os.environ.get('ALLOWED_HOSTS') from .env: "
+    f"'{os.environ.get('ALLOWED_HOSTS')}'"
+)
+print(f"Calculated ALLOWED_HOSTS list in settings.py: {ALLOWED_HOSTS}")
+print("--- END DEBUGGING ENVIRONMENT VARIABLES ---\n")
+# --- END DEBUG PRINTS ---
 
 # Application definition
 
@@ -59,7 +71,7 @@ INSTALLED_APPS = [
 
     # Third-party apps
     "crispy_forms",
-    "crispy_bootstrap5",    
+    "crispy_bootstrap5",
     "rest_framework",
     'storages',  # For AWS S3 integration
 
@@ -81,7 +93,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',    
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
 ROOT_URLCONF = 'restaurant_booking_project.urls'
