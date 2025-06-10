@@ -1,15 +1,18 @@
 # bookings/tests/test_views.py
-from datetime import time
-from django.test import TestCase, Client
-from django.urls import reverse
-from django.contrib.auth import get_user_model
+# Standard library imports
 from datetime import date, time, timedelta, datetime
-from django.utils import timezone
-from bookings.models import Table, Booking
+
 # For mocking timezone.now() if precise time control is needed
 from unittest.mock import patch
-from datetime import timedelta
 
+# Django imports (third-party)
+from django.test import TestCase, Client
+from django.urls import reverse
+from django.utils import timezone
+from django.contrib.auth import get_user_model
+
+# Local application imports
+from bookings.models import Table, Booking
 
 User = get_user_model()
 
@@ -78,7 +81,11 @@ class PublicViewsTest(TestCase):
 
         # Now assert the form error
         self.assertFormError(
-            form, 'password2', "The two password fields didn’t match.")
+            response,
+            form,
+            'password2',
+            "The two password fields didn’t match."
+        )
         self.assertEqual(User.objects.count(), initial_user_count)
 
 
@@ -118,7 +125,8 @@ class AuthenticatedViewsTest(TestCase):
 
     def test_make_booking_GET_unauthenticated(self):
         """
-        Test GET request to make_booking view for unauthenticated user (should redirect).
+        Test GET request to make_booking view for
+        unauthenticated user (should redirect).
         """
         self.client.logout()
         response = self.client.get(reverse('make_booking'))
@@ -166,29 +174,46 @@ class AuthenticatedViewsTest(TestCase):
         """
         # Book table1
         Booking.objects.create(
-            user=self.user, table=self.table1,
-            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2, status='confirmed'
+            user=self.user,
+            table=self.table1,
+            booking_date=self.future_date,
+            booking_time=self.booking_time,
+            number_of_guests=2,
+            status='confirmed'
         )
+
         # Book table2
         Booking.objects.create(
-            user=self.user, table=self.table2,
-            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=4, status='confirmed'
+            user=self.user,
+            table=self.table2,
+            booking_date=self.future_date,
+            booking_time=self.booking_time,
+            number_of_guests=4,
+            status='confirmed'
         )
+
         initial_booking_count = Booking.objects.count()  # Should be 2 now
 
         form_data = {
             'booking_date': self.future_date.isoformat(),
             'booking_time': self.booking_time.strftime('%H:%M'),
-            'number_of_guests': 3,  # Needs capacity 3, but both tables are booked
+            # Needs capacity 3, but both tables are booked
+            'number_of_guests': 3,
         }
         response = self.client.post(reverse('make_booking'), form_data)
         self.assertEqual(response.status_code, 200)  # Should re-render form
         self.assertTemplateUsed(response, 'bookings/make_booking.html')
         self.assertContains(
-            response, "No tables available for your requested date, time, and number of guests.")
+            response,
+            (
+                "No tables available for your requested date, time, "
+                "and number of guests."
+            )
+        )
+
         self.assertEqual(Booking.objects.count(),
                          initial_booking_count)  # No new booking
-        
+
     def test_my_bookings_view_display(self):
         """
         Test that a user's bookings are displayed correctly.
@@ -197,22 +222,38 @@ class AuthenticatedViewsTest(TestCase):
         past_booking_date = date.today() - timedelta(days=5)
         past_booking_time = time(10, 0)
         Booking.objects.create(
-            user=self.user, table=self.table1, booking_date=past_booking_date,
-            booking_time=past_booking_time, number_of_guests=2, status='Completed'
+            user=self.user,
+            table=self.table1,
+            booking_date=past_booking_date,
+            booking_time=past_booking_time,
+            number_of_guests=2,
+            status='Completed'
         )
+
         # Create an upcoming booking for the user
         upcoming_booking_date = date.today() + timedelta(days=5)
         upcoming_booking_time = time(18, 0)
         upcoming_booking = Booking.objects.create(
-            user=self.user, table=self.table2, booking_date=upcoming_booking_date,
-            booking_time=upcoming_booking_time, number_of_guests=3, status='pending'
+            user=self.user,
+            table=self.table2,
+            booking_date=upcoming_booking_date,
+            booking_time=upcoming_booking_time,
+            number_of_guests=3,
+            status='pending'
         )
+
         # Create a booking for another user (should not be displayed)
         other_user = User.objects.create_user(
-            username='otheruser', password='password')
+            username='otheruser',
+            password='password'
+        )
         Booking.objects.create(
-            user=other_user, table=self.table1, booking_date=upcoming_booking_date,
-            booking_time=upcoming_booking_time, number_of_guests=1, status='confirmed'
+            user=other_user,
+            table=self.table1,
+            booking_date=upcoming_booking_date,
+            booking_time=upcoming_booking_time,
+            number_of_guests=1,
+            status='confirmed'
         )
 
         response = self.client.get(reverse('my_bookings'))
@@ -233,15 +274,19 @@ class AuthenticatedViewsTest(TestCase):
 
         # Ensure other user's booking isn't shown
         self.assertNotContains(response, "otheruser")
-    
+
     def test_edit_booking_GET(self):
         """
         Test GET request to edit_booking view.
         """
         booking = Booking.objects.create(
-            user=self.user, table=self.table1,
-            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2
+            user=self.user,
+            table=self.table1,
+            booking_date=self.future_date,
+            booking_time=self.booking_time,
+            number_of_guests=2
         )
+
         response = self.client.get(reverse('edit_booking', args=[booking.pk]))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'bookings/edit_booking.html')
@@ -256,9 +301,13 @@ class AuthenticatedViewsTest(TestCase):
         other_user = User.objects.create_user(
             username='other_guy', password='pass')
         booking_other = Booking.objects.create(
-            user=other_user, table=self.table1,
-            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2
+            user=other_user,
+            table=self.table1,
+            booking_date=self.future_date,
+            booking_time=self.booking_time,
+            number_of_guests=2
         )
+
         response = self.client.get(
             reverse('edit_booking', args=[booking_other.pk]))
         # Should return 404 if not found for user
@@ -341,7 +390,9 @@ class AuthenticatedViewsTest(TestCase):
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(
-            messages[0]), "Bookings cannot be cancelled within 2 hours of the reservation time.")
+            messages[0]),
+            "Bookings cannot be cancelled within 2 hours "
+            "of the reservation time.")
 
     def test_cancel_booking_POST_already_cancelled(self):
         """
@@ -385,9 +436,14 @@ class AuthenticatedViewsTest(TestCase):
         """
         # Create a booking to make table1 unavailable
         Booking.objects.create(
-            user=self.user, table=self.table1,
-            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2, status='confirmed'
+            user=self.user,
+            table=self.table1,
+            booking_date=self.future_date,
+            booking_time=self.booking_time,
+            number_of_guests=2,
+            status='confirmed'
         )
+
         form_data = {
             'check_date': self.future_date.isoformat(),
             'check_time': self.booking_time.strftime('%H:%M'),
@@ -409,13 +465,23 @@ class AuthenticatedViewsTest(TestCase):
         """
         # Book both tables
         Booking.objects.create(
-            user=self.user, table=self.table1,
-            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=2, status='confirmed'
+            user=self.user,
+            table=self.table1,
+            booking_date=self.future_date,
+            booking_time=self.booking_time,
+            number_of_guests=2,
+            status='confirmed'
         )
+
         Booking.objects.create(
-            user=self.user, table=self.table2,
-            booking_date=self.future_date, booking_time=self.booking_time, number_of_guests=4, status='confirmed'
+            user=self.user,
+            table=self.table2,
+            booking_date=self.future_date,
+            booking_time=self.booking_time,
+            number_of_guests=4,
+            status='confirmed'
         )
+
         form_data = {
             'check_date': self.future_date.isoformat(),
             'check_time': self.booking_time.strftime('%H:%M'),
@@ -428,7 +494,10 @@ class AuthenticatedViewsTest(TestCase):
         self.assertEqual(len(response.context['available_tables']), 0)
         self.assertContains(
             response,
-            "No tables available for the selected criteria. Please try a different date, time, or number of guests."
+            (
+                "No tables available for the selected criteria. "
+                "Please try a different date, time, or number of guests."
+            )
         )
 
     def test_check_availability_POST_invalid_form(self):
@@ -446,4 +515,6 @@ class AuthenticatedViewsTest(TestCase):
         self.assertTemplateUsed(response, 'bookings/check_availability.html')
         self.assertFalse(response.context['form'].is_valid())
         self.assertContains(
-            response, "You cannot check availability for a past date and time.")
+            response,
+            "You cannot check availability for a past date and time."
+        )

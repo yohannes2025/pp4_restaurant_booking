@@ -1,17 +1,17 @@
 # bookings/tests/test_staff_views.py
-from bookings.models import Table, Booking # Adjust imports as needed
-from django.utils import timezone # For timezone.now().date()
-from django.contrib.auth.models import User
-from bookings.models import Table
+# Standard library imports
+from datetime import date, time, timedelta, datetime
+
+# Django imports (third-party)
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-from datetime import date, time, timedelta, datetime
 from django.utils import timezone
-from bookings.models import Table, Booking
-from bookings.models import Table
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import User
 from django.contrib.admin.views.decorators import staff_member_required
 
+# Local application imports
+from bookings.models import Table, Booking
 
 User = get_user_model()
 
@@ -39,22 +39,27 @@ class StaffViewsTest(TestCase):
 
         # Create some bookings for testing staff views
         cls.booking_today_pending = Booking.objects.create(
-            user=cls.normal_user, table=cls.table1,  # THIS IS THE KEY BOOKING FOR TABLE1
-            booking_date=cls.today, booking_time=time(14, 0), number_of_guests=2, status='pending'
+            # THIS IS THE KEY BOOKING FOR TABLE1
+            user=cls.normal_user, table=cls.table1,
+            booking_date=cls.today, booking_time=time(14, 0),
+            number_of_guests=2, status='pending'
         )
         cls.booking_tomorrow_confirmed = Booking.objects.create(
             user=cls.normal_user, table=cls.table2,
-            booking_date=cls.tomorrow, booking_time=time(19, 0), number_of_guests=4, status='confirmed'
+            booking_date=cls.tomorrow, booking_time=time(19, 0),
+            number_of_guests=4, status='confirmed'
         )
         cls.booking_yesterday_completed = Booking.objects.create(
             # Another booking on table1 (past, completed)
             user=cls.normal_user, table=cls.table1,
-            booking_date=cls.yesterday, booking_time=time(12, 0), number_of_guests=2, status='completed'
+            booking_date=cls.yesterday, booking_time=time(12, 0),
+            number_of_guests=2, status='completed'
         )
         cls.booking_future_cancelled = Booking.objects.create(
             # Another booking on table1 (future, cancelled)
             user=cls.normal_user, table=cls.table1,
-            booking_date=cls.today + timedelta(days=5), booking_time=time(10, 0), number_of_guests=2, status='cancelled'
+            booking_date=cls.today + timedelta(days=5),
+            booking_time=time(10, 0), number_of_guests=2, status='cancelled'
         )
 
     def setUp(self):
@@ -72,7 +77,7 @@ class StaffViewsTest(TestCase):
 
         # Create a table with a unique number to avoid conflicts
         self.table = Table.objects.create(number=100, capacity=4)
- 
+
     def test_staff_table_edit_POST_success(self):
         response = self.client.post(
             reverse('staff_table_edit', args=[self.table1.pk]),
@@ -105,7 +110,8 @@ class StaffViewsTest(TestCase):
         # Redirect to login or permission denied
         self.assertEqual(response.status_code, 302)
 
-        # The default behavior for staff_member_required is redirect to login if not authenticated        
+        # The default behavior for staff_member_required
+        # is redirect to login if not authenticated
         self.assertNotEqual(response.status_code, 200)
 
         # Unauthenticated user access
@@ -141,7 +147,8 @@ class StaffViewsTest(TestCase):
         self.assertTemplateUsed(response, 'bookings/staff_booking_list.html')
         self.assertIn('bookings', response.context)
         self.assertEqual(
-            response.context['bookings'].paginator.count, Booking.objects.count())
+            response.context['bookings'].paginator.count,
+            Booking.objects.count())
 
         self.client.logout()
         self.client.login(username='normaluser', password='password123')
@@ -195,7 +202,7 @@ class StaffViewsTest(TestCase):
             str(messages[0]), "Invalid date format. Please use YYYY-MM-DD.")
         # date_filter should be reset
         self.assertFalse(response.context['date_filter'])
-    
+
     def test_staff_booking_detail_GET(self):
         """
         Test GET request to staff booking detail view.
@@ -234,7 +241,7 @@ class StaffViewsTest(TestCase):
                          'Confirmed by staff.')
         self.assertContains(
             response, "Booking status updated successfully!", html=False)
-    
+
     def test_staff_table_list_access(self):
         """
         Test access to staff table list for staff and non-staff.
@@ -290,9 +297,10 @@ class StaffViewsTest(TestCase):
         self.assertContains(
             response, "Table with this Number already exists.")
         self.assertContains(
-            response, "Please correct the errors in the form when adding a table.")
+            response,
+            "Please correct the errors in the form when adding a table.")
         self.assertEqual(Table.objects.count(), 3)
-    
+
     def test_staff_table_edit_GET(self):
         """
         Test GET request to staff table edit view.
@@ -335,9 +343,9 @@ class StaffViewsTest(TestCase):
         self.assertEqual(
             post_delete_count,
             initial_table_count - 1,
-            f"Expected {initial_table_count - 1} tables, found {post_delete_count}"
+            f"Expected {initial_table_count - 1} tables, "
+            "found {post_delete_count}"
         )
-
 
     def test_staff_table_delete_POST_with_active_bookings(self):
         # Ensure staff user is logged in
@@ -353,11 +361,13 @@ class StaffViewsTest(TestCase):
             status='confirmed'
         )
         print(
-            f"DEBUG TEST: Created booking {active_booking_for_table1.pk} for table {self.table1.pk}")
+            f"DEBUG TEST: Created booking {active_booking_for_table1.pk} "
+            f"for table {self.table1.pk}")
 
         # FIX: Change booking_set to bookings
         print(
-            f"DEBUG TEST: Table {self.table1.pk} has {self.table1.bookings.count()} related bookings.")
+            f"DEBUG TEST: Table {self.table1.pk} has "
+            f"{self.table1.bookings.count()} related bookings.")
 
         initial_table_count = Table.objects.count()
 
@@ -365,21 +375,35 @@ class StaffViewsTest(TestCase):
         response = self.client.post(url, follow=True)  # Keep follow=True
 
         self.assertEqual(response.status_code, 200,
-                        "Expected a 200 OK status after redirect.")
+                         "Expected a 200 OK status after redirect.")
 
-        self.assertEqual(Table.objects.count(), initial_table_count,
-                        "Table count changed when it should not have.")
+        self.assertEqual(
+            Table.objects.count(),
+            initial_table_count,
+            "Table count changed when it should not have."
+            )
+
         self.assertTrue(Table.objects.filter(
             pk=self.table1.pk).exists(), "Table was unexpectedly deleted.")
 
         messages = list(response.context['messages'])
-        self.assertEqual(len(
-            messages), 1, f"Expected 1 message, but got {len(messages)}: {[str(m) for m in messages]}")
+        self.assertEqual(
+            len(messages),
+            1,
+            f"Expected 1 message, but got {len(messages)}: "
+            f"{[str(m) for m in messages]}"
+            )
 
-        expected_message_part = f"Cannot delete table {self.table1.number} because it has active bookings."
+        expected_message_part = (
+            f"Cannot delete table {self.table1.number} "
+            "because it has active bookings."
+        )
+
         self.assertIn(
-            expected_message_part, str(messages[0]),
-            f"Expected message '{expected_message_part}' not found. Actual: {str(messages[0])}"
+            expected_message_part,
+            str(messages[0]),
+            f"Expected message '{expected_message_part}' not found. "
+            f"Actual: {str(messages[0])}"
         )
 
         self.assertTemplateUsed(response, 'bookings/staff_table_list.html')

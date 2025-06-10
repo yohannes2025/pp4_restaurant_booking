@@ -1,11 +1,17 @@
 # bookings/tests/test_integrations.py
+# Standard library imports
+from datetime import date, time, timedelta, datetime
+from unittest.mock import patch
+
+# Django imports (third-party)
 from django.test import TestCase, Client
 from django.urls import reverse
-from django.contrib.auth import get_user_model
-from datetime import date, time, timedelta, datetime
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+
+# Local application imports
 from bookings.models import Table, Booking
-from unittest.mock import patch
+
 
 
 User = get_user_model()
@@ -37,7 +43,8 @@ class UserBookingFlowIntegrationTest(TestCase):
 
     def test_full_booking_flow_create_edit_cancel(self):
         """
-        Tests the complete cycle of creating, editing, and cancelling a booking.
+        Tests the complete cycle of creating,
+        editing, and cancelling a booking.
         """
         # --- Step 1: Create a Booking ---
         initial_booking_count = Booking.objects.count()
@@ -80,13 +87,15 @@ class UserBookingFlowIntegrationTest(TestCase):
             'notes': 'Updated notes for more guests',
         }
         response_edit = self.client.post(
-            reverse('edit_booking', args=[booking_id]), form_data_edit, follow=True)
+            reverse('edit_booking', args=[booking_id]),
+            form_data_edit, follow=True)
 
         # Check successful edit and redirection
         self.assertEqual(response_edit.status_code, 200)
         self.assertTemplateUsed(response_edit, 'bookings/my_bookings.html')
         self.assertContains(
-            response_edit, "Your booking for Table 2 has been updated successfully!")
+            response_edit,
+            "Your booking for Table 2 has been updated successfully!")
 
         booking.refresh_from_db()
         self.assertEqual(booking.number_of_guests, new_guests)
@@ -100,8 +109,9 @@ class UserBookingFlowIntegrationTest(TestCase):
         self.assertNotContains(response_edit, "Initial booking notes")
 
         # --- Step 3: Cancel the Booking ---
-        # Ensure the booking is not too close to the current time for cancellation
-        # (Our mock_now is far enough from future_date for this to pass)
+        # Ensure the booking is not too close to the current time
+        # for cancellation
+        # (mock_now is far enough from future_date for this to pass)
         response_cancel = self.client.post(
             reverse('cancel_booking', args=[booking_id]), follow=True)
 
@@ -119,7 +129,6 @@ class UserBookingFlowIntegrationTest(TestCase):
         # Still shows notes
         self.assertNotContains(
             response_cancel, "Updated notes for more guests")
-
 
     def test_booking_and_availability_check_interplay(self):
         """
@@ -150,7 +159,8 @@ class UserBookingFlowIntegrationTest(TestCase):
         # No need to follow, just make the booking
         self.client.post(reverse('make_booking'), form_data_book)
 
-        # Step 3: Check availability again for the same slot (should show fewer tables)
+        # Step 3: Check availability again for the
+        # same slot (should show fewer tables)
         response_after_book_check = self.client.post(
             reverse('check_availability'), form_data_check)
         self.assertEqual(response_after_book_check.status_code, 200)
@@ -168,7 +178,8 @@ class UserBookingFlowIntegrationTest(TestCase):
         response_cancel = self.client.post(
             reverse('cancel_booking', args=[booking.pk]))
 
-        # Step 5: Check availability one last time (should show tables are available again)
+        # Step 5: Check availability one last time
+        # (should show tables are available again)
         response_after_cancel_check = self.client.post(
             reverse('check_availability'), form_data_check)
         self.assertEqual(response_after_cancel_check.status_code, 200)

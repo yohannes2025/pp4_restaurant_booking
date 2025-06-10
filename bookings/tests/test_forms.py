@@ -1,9 +1,14 @@
 # bookings/tests/test_forms.py
+# Standard library imports
+from datetime import date, time, timedelta, datetime
+
+# Django imports (third-party)
 from django.test import TestCase
 from django import forms
-from datetime import date, time, timedelta, datetime
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+
+# Local application imports
 from bookings.forms import (
     CustomUserCreationForm,
     BookingForm,
@@ -12,6 +17,7 @@ from bookings.forms import (
     TableForm
 )
 from bookings.models import Booking, Table
+
 
 User = get_user_model()
 
@@ -94,7 +100,8 @@ class BookingFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('booking_time', form.errors)
         self.assertIn(
-            'Booking time must be between 9:00 AM and 10:00 PM.', form.errors['booking_time'])
+            'Booking time must be between 9:00 AM and 10:00 PM.',
+            form.errors['booking_time'])
 
     def test_booking_form_zero_guests(self):
         form_data = {
@@ -142,9 +149,8 @@ class AvailabilityFormTest(TestCase):
         self.assertEqual(form.cleaned_data['num_guests'], 2)
 
     def test_availability_form_past_date_time(self):
-        # --- Corrected logic for this test case ---
-
-        # 1. Test with a past *date* and a time that is within restaurant hours (e.g., 12:00 PM).
+        # 1. Test with a past *date* and a time that is within
+        # restaurant hours (e.g., 12:00 PM).
         # This should ONLY trigger the "past date" validation.
         past_date_yesterday = date.today() - timedelta(days=1)
         # Noon, clearly within 9 AM - 10 PM
@@ -161,9 +167,11 @@ class AvailabilityFormTest(TestCase):
             form.is_valid(), "Form should be invalid for a past date.")
         self.assertIn('__all__', form.errors)
         self.assertIn(
-            "You cannot check availability for a past date and time.", form.errors['__all__'])
+            "You cannot check availability for a past date and time.",
+            form.errors['__all__'])
 
-        # Test with the *current date* but a *past time* (within restaurant hours).        
+        # Test with the *current date* but a
+        # *past time* (within restaurant hours).
         current_date_today = date.today()
 
         # A time clearly in the past but within restaurant hours.
@@ -172,20 +180,25 @@ class AvailabilityFormTest(TestCase):
         # Get an aware datetime for 1 hour ago.
         one_hour_ago = timezone.now() - timedelta(hours=1)
 
-        # Create a datetime object that is explicitly in the past and also within restaurant hours.
+        # Create a datetime object that is explicitly in
+        # the past and also within restaurant hours.
         past_datetime_for_today_check = timezone.now() - timedelta(hours=2)
 
         form_data_past_time_today = {
-            'check_date': past_datetime_for_today_check.date().isoformat(),
-            'check_time': past_datetime_for_today_check.time().strftime('%H:%M'),
+            'check_date': past_datetime_for_today_check.date()
+            .isoformat(),
+            'check_time': past_datetime_for_today_check.time()
+            .strftime('%H:%M'),
             'num_guests': 2,
         }
         form = AvailabilityForm(data=form_data_past_time_today)
         self.assertFalse(
-            form.is_valid(), "Form should be invalid for a past time on current date.")
+            form.is_valid(),
+            "Form should be invalid for a past time on current date.")
         self.assertIn('__all__', form.errors)
         self.assertIn(
-            "You cannot check availability for a past date and time.", form.errors['__all__'])
+            "You cannot check availability for a past date and time.",
+            form.errors['__all__'])
 
     def test_availability_form_time_out_of_range(self):
         future_date = date.today() + timedelta(days=5)
@@ -268,7 +281,9 @@ class BookingStatusUpdateFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('status', form.errors)
         self.assertIn(
-            "Select a valid choice. invalid_status is not one of the available choices.", form.errors['status'])
+            "Select a valid choice. "
+            "invalid_status is not one of the available choices.",
+            form.errors['status'])
 
 
 class TableFormTest(TestCase):
@@ -300,7 +315,6 @@ class TableFormTest(TestCase):
         self.assertIn("Table with this Number already exists.",
                       form.errors['number'])
 
-
     def test_table_form_zero_capacity(self):
         form_data = {
             'number': 102,
@@ -310,4 +324,5 @@ class TableFormTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('capacity', form.errors)
         self.assertIn(
-            "Ensure this value is greater than or equal to 1.", form.errors['capacity'])
+            "Ensure this value is greater than or equal to 1.",
+            form.errors['capacity'])

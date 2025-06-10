@@ -1,8 +1,13 @@
 # bookings/tests/test_models.py
+# Standard library imports
+from datetime import date, time, timedelta
+
+# Django imports (third-party)
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.db.utils import IntegrityError
-from datetime import date, time, timedelta
+
+# Local application imports
 from bookings.models import Table, Booking
 
 User = get_user_model()
@@ -14,7 +19,8 @@ class TableModelTest(TestCase):
     """
     def test_create_table(self):
         """
-        Test that a Table object can be created successfully with correct attributes.
+        Test that a Table object can be created
+        successfully with correct attributes.
         """
         table = Table.objects.create(number=1, capacity=4)
         self.assertEqual(table.number, 1)
@@ -33,10 +39,9 @@ class TableModelTest(TestCase):
     def test_table_capacity_validation(self):
         """
         Test that capacity cannot be negative.
-        """      
+        """
         table = Table.objects.create(number=2, capacity=-1)
-        
-        self.assertEqual(table.capacity, -1)        
+        self.assertEqual(table.capacity, -1)
 
 
 class BookingModelTest(TestCase):
@@ -56,7 +61,8 @@ class BookingModelTest(TestCase):
 
     def test_create_booking(self):
         """
-        Test that a Booking object can be created successfully with correct attributes.
+        Test that a Booking object can be created
+        successfully with correct attributes.
         """
         booking = Booking.objects.create(
             user=self.user,
@@ -78,12 +84,14 @@ class BookingModelTest(TestCase):
         self.assertTrue(booking.updated_at)
         self.assertEqual(
             str(booking),
-            f"Booking by {self.user.username} for Table {self.table.number} on {self.future_date} at {self.booking_time} (pending)"
+            f"Booking by {self.user.username} for Table {self.table.number} "
+            f"on {self.future_date} at {self.booking_time} (pending)"
         )
 
     def test_unique_together_constraint(self):
         """
-        Test the unique_together constraint for (table, booking_date, booking_time).
+        Test the unique_together constraint for
+        (table, booking_date, booking_time).
         """
         Booking.objects.create(
             user=self.user,
@@ -93,7 +101,8 @@ class BookingModelTest(TestCase):
             number_of_guests=2,
             status='pending'
         )
-        # Attempt to create another booking for the same table at the exact same date and time
+        # Attempt to create another booking for the same
+        # table at the exact same date and time
         with self.assertRaises(IntegrityError):
             Booking.objects.create(
                 user=self.user,
