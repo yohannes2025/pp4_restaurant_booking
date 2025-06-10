@@ -1,1 +1,1 @@
-web: gunicorn restaurant_booking_project.wsgi
+web: gunicorn restaurant_booking_project.wsgi --log-file - --access-logfile - --error-logfile - --log-level debug

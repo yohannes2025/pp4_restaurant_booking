@@ -233,3 +233,20 @@ LOGGING = {
         'level': 'DEBUG',
     },
 }
+
+# --- START HEROKU DEBUG PRINTS (Temporarily add these back) ---
+print("\n--- HEROKU DEBUGGING ENVIRONMENT VARIABLES ---")
+print(f"Heroku os.environ.get('DEBUG'): '{os.environ.get('DEBUG')}'")
+print(f"Heroku Calculated DEBUG: {DEBUG}")
+print(
+    f"Heroku os.environ.get('ALLOWED_HOSTS'): '{os.environ.get('ALLOWED_HOSTS')}'")
+print(f"Heroku Calculated ALLOWED_HOSTS: {ALLOWED_HOSTS}")
+print(
+    f"Heroku os.environ.get('DATABASE_URL'): '{os.environ.get('DATABASE_URL')}'")
+# Check if secret key exists
+print(
+    f"Heroku os.environ.get('SECRET_KEY') is set: {bool(os.environ.get('SECRET_KEY'))}")
+print("--- END HEROKU DEBUGGING ENVIRONMENT VARIABLES ---\n")
+# --- END HEROKU DEBUG PRINTS ---
+
+# ... (rest of your settings.py code) ...
