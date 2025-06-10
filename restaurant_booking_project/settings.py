@@ -45,17 +45,6 @@ else:
             "when DEBUG is False."
         )
 
-# --- START DEBUG PRINTS ---
-print("\n--- DEBUGGING ENVIRONMENT VARIABLES ---")
-print(f"os.environ.get('DEBUG') from .env: '{os.environ.get('DEBUG')}'")
-print(f"Calculated DEBUG variable in settings.py: {DEBUG}")
-print(
-    f"os.environ.get('ALLOWED_HOSTS') from .env: "
-    f"'{os.environ.get('ALLOWED_HOSTS')}'"
-)
-print(f"Calculated ALLOWED_HOSTS list in settings.py: {ALLOWED_HOSTS}")
-print("--- END DEBUGGING ENVIRONMENT VARIABLES ---\n")
-# --- END DEBUG PRINTS ---
 
 # Application definition
 
@@ -126,8 +115,6 @@ AUTHENTICATION_BACKENDS = [
 
 SITE_ID = 1
 
-LOGIN_REDIRECT_URL = "/"
-ACCOUNT_LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 WSGI_APPLICATION = 'restaurant_booking_project.wsgi.application'
 
@@ -229,9 +216,9 @@ MESSAGE_TAGS = {
 # Custom settings for authentication redirects
 LOGIN_REDIRECT_URL = 'home'  # Redirect to home page after login
 LOGOUT_REDIRECT_URL = 'home'  # Redirect to home page after logout
+
 # The URL where the login view is located (Django's default)
 LOGIN_URL = 'login'
-
 
 LOGGING = {
     'version': 1,
