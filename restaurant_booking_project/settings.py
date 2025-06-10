@@ -12,30 +12,37 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 import dj_database_url
+from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 from django.contrib.messages import constants as messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Load environment variables from .env file
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    'django-insecure-kg^-g8qq#(2&0oy4@wl9o^v4vy6cx-'
-    'kx+ttt8(!_6h+g0@n4-l'
-)
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
-ALLOWED_HOSTS = [
-    'pp4-restaurant-reservations-c439c4476aa0.herokuapp.com',
-    'localhost',
-    '127.0.0.1'
-    ]
+ALLOWED_HOSTS_STR = os.environ.get('ALLOWED_HOSTS')
+
+if ALLOWED_HOSTS_STR:
+    # Convert comma-separated string to list
+    ALLOWED_HOSTS = ALLOWED_HOSTS_STR.split(',')
+else:
+    ALLOWED_HOSTS = []  # Default to empty list
+    if not DEBUG:  # Only raise error if in production (DEBUG=False)
+        raise ImproperlyConfigured(
+            "ALLOWED_HOSTS environment variable must be set in production when DEBUG is False.")
 
 
 # Application definition
@@ -48,29 +55,33 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    "crispy_forms",
-    "crispy_bootstrap5",
     "django_tables2",
+
+    # Third-party apps
+    "crispy_forms",
+    "crispy_bootstrap5",    
     "rest_framework",
-    'storages',
+    'storages',  # For AWS S3 integration
 
     # Allauth apps
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    'bookings',
+
+    # Your custom apps
+    "bookings",
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "allauth.account.middleware.AccountMiddleware",
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',    
 ]
 
 ROOT_URLCONF = 'restaurant_booking_project.urls'
@@ -78,7 +89,7 @@ ROOT_URLCONF = 'restaurant_booking_project.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -91,9 +102,11 @@ TEMPLATES = [
     },
 ]
 
+# Crispy Forms Configuration
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
 
+# --- Allauth Configuration ---
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
     "allauth.account.auth_backends.AuthenticationBackend",
@@ -107,21 +120,21 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/accounts/login/"
 WSGI_APPLICATION = 'restaurant_booking_project.wsgi.application'
 
 
-# Database
+# --- Database Configuration ---
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-database_url = os.environ.get('DATABASE_URL')
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
-if database_url:
+if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.parse(
-            database_url,
+            DATABASE_URL,
             conn_max_age=600,
-            ssl_require=True
+            ssl_require=True  # Crucial for production DBs
         )
     }
 else:
-    # Local fallback to SQLite without ssl
+    # Fallback to SQLite for local development
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -131,7 +144,8 @@ else:
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Password validation
+
+# --- Password Validation ---
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -162,7 +176,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
+# --- Internationalization and Localization ---
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
@@ -174,7 +188,7 @@ USE_I18N = True
 USE_TZ = True   # Enable timezone support
 
 
-# Static files (CSS, JavaScript, Images)
+# --- Static and Media Files Configuration (CSS, JavaScript, Images) ---
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
@@ -199,6 +213,7 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
+# --- Message Tags for Django Messages Framework ---
 # Custom settings for authentication redirects
 LOGIN_REDIRECT_URL = 'home'  # Redirect to home page after login
 LOGOUT_REDIRECT_URL = 'home'  # Redirect to home page after logout
