@@ -32,3 +32,9 @@ staticfiles/       # Collected static files (managed by collectstatic)
 .DS_Store
 .localized
 Thumbs.db
+
+.vs/
+*.vsidx
+*.wsuo
+*.json.user
+*.bin
