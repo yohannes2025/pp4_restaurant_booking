@@ -38,3 +38,5 @@ Thumbs.db
 *.wsuo
 *.json.user
 *.bin
+bin/
+obj/
