@@ -178,7 +178,7 @@ def my_bookings(request):
         user=request.user,
         booking_date__gte=timezone.now().date()
     ).exclude(
-        status__in=['cancelled', 'no-show', 'completed']
+        status__in=['cancelled', 'completed']
     ).order_by(
         'booking_date', 'booking_time'
     )
@@ -343,7 +343,7 @@ def cancel_booking(request, booking_id):
             request, "Bookings cannot be cancelled"
             " within 2 hours of the reservation time.")
     # Prevent cancelling already finalized bookings
-    elif booking.status in ['cancelled', 'completed', 'no-show']:
+    elif booking.status in ['cancelled', 'completed']:
         messages.warning(
             request,
             (

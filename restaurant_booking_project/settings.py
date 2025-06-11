@@ -204,6 +204,7 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# --- Message Tags for Django Messages Framework ---
 MESSAGE_TAGS = {
     messages.DEBUG: 'alert-info',
     messages.INFO: 'alert-info',
@@ -212,7 +213,6 @@ MESSAGE_TAGS = {
     messages.ERROR: 'alert-danger',
 }
 
-# --- Message Tags for Django Messages Framework ---
 # Custom settings for authentication redirects
 LOGIN_REDIRECT_URL = 'home'  # Redirect to home page after login
 LOGOUT_REDIRECT_URL = 'home'  # Redirect to home page after logout
@@ -234,19 +234,3 @@ LOGGING = {
     },
 }
 
-# --- START HEROKU DEBUG PRINTS (Temporarily add these back) ---
-print("\n--- HEROKU DEBUGGING ENVIRONMENT VARIABLES ---")
-print(f"Heroku os.environ.get('DEBUG'): '{os.environ.get('DEBUG')}'")
-print(f"Heroku Calculated DEBUG: {DEBUG}")
-print(
-    f"Heroku os.environ.get('ALLOWED_HOSTS'): '{os.environ.get('ALLOWED_HOSTS')}'")
-print(f"Heroku Calculated ALLOWED_HOSTS: {ALLOWED_HOSTS}")
-print(
-    f"Heroku os.environ.get('DATABASE_URL'): '{os.environ.get('DATABASE_URL')}'")
-# Check if secret key exists
-print(
-    f"Heroku os.environ.get('SECRET_KEY') is set: {bool(os.environ.get('SECRET_KEY'))}")
-print("--- END HEROKU DEBUGGING ENVIRONMENT VARIABLES ---\n")
-# --- END HEROKU DEBUG PRINTS ---
-
-# ... (rest of your settings.py code) ...
