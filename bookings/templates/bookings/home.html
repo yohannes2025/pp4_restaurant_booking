@@ -1,4 +1,4 @@
-{% extends 'bookings/base.html' %}  {# Inherit from base layout #}
+{% extends 'bookings/base.html' %} {# Inherit from base layout #}
 {% block title %}Welcome to Restaurant Booking{% endblock %}
 {% block content %}
     <!-- Hero section with welcome message -->
@@ -10,7 +10,9 @@
                 <!-- Greet logged-in user and provide booking links -->
                 <p class="fs-5">Hello, {{ user.username }}!</p>
                 <p>
-                    <a class="btn btn-primary btn-lg me-2"
+                    <!-- Added mb-3 for mobile margin-bottom and mb-md-0 to remove it on medium screens and up -->
+                    <!-- me-md-2 retains the margin-end (right margin) on medium screens and up -->
+                    <a class="btn btn-primary btn-lg mb-3 mb-md-0 me-md-2"
                        href="{% url 'make_booking' %}"
                        role="button">Make a new reservation</a>
                     <a class="btn btn-outline-secondary btn-lg"
