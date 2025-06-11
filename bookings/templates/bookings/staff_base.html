@@ -1,4 +1,4 @@
-{% load static %}
+{% comment %} {% load static %}
 {# Load static files for CSS, JS, images, etc. #}
 {% now "Y" as current_year %}  {# Store current year for footer copyright #}
 <!DOCTYPE html>
@@ -120,6 +120,156 @@
         <!-- Bootstrap JS -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
                 integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
+                crossorigin="anonymous"></script>
+    </body>
+</html> {% endcomment %}
+
+
+{% load static %}
+{# Load static files for CSS, JS, images, etc. #}
+{% now "Y" as current_year %}    {# Store current year for footer copyright #}
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>
+            {% block title %}Staff Dashboard{% endblock %}
+        </title>
+        <!-- Favicon for branding -->
+        <link rel="icon" href="{% static 'images/favicon.ico' %}">
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css"
+              rel="stylesheet"
+              xintegrity="sha384-4Q6Gf2aSP4eDXB8Miphtr37CMZZQ5oXLH2yaXMJ2w8e2ZtHTl7GptT4jmndRuHDT"
+              crossorigin="anonymous">
+        <style>
+        /* Ensure html and body take full height and remove default margins */
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        /* Body as a flex container to push the footer to the bottom */
+        body {
+            display: flex; /* Enable Flexbox */
+            flex-direction: column; /* Stack children vertically */
+            min-height: 100vh; /* Ensure body takes at least full viewport height */
+            font-family: sans-serif;
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            margin-bottom: 20px; /* Keep original navbar margin */
+        }
+        /* Main content container should grow to fill available space */
+        .container {
+            flex: 1 0 auto; /* Allows the container to grow and fill space */
+            padding-top: 20px;
+            padding-bottom: 20px;
+        }
+        .messages { list-style: none; padding: 0; }
+        .messages li { margin-bottom: 10px; }
+
+        /* Footer styling to remain at the bottom */
+        footer {
+            padding: 10px; /* Consistent padding with base.html's footer */
+            background-color: #e9ecef; /* Light grey background for consistency */
+            border-top: 1px solid #dee2e6; /* Subtle top border */
+            flex-shrink: 0; /* Prevent footer from shrinking */
+            margin-top: auto; /* This crucial property pushes the footer to the bottom */
+        }
+        </style>
+    </head>
+    <body>
+        <!-- Navigation bar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="{% url 'staff_dashboard' %}">Restaurant Staff Portal</a>
+                <button class="navbar-toggler"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#navbarNavStaff"
+                        aria-controls="navbarNavStaff"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <!-- Navigation links -->
+                <div class="collapse navbar-collapse" id="navbarNavStaff">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link {% if active_tab == 'bookings' %}active{% endif %}"
+                               href="{% url 'staff_booking_list' %}">Bookings</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {% if active_tab == 'tables' %}active{% endif %}"
+                               href="{% url 'staff_table_list' %}">Tables</a>
+                        </li>
+                    </ul>
+                    <!-- User auth controls -->
+                    <ul class="navbar-nav ms-auto">
+                        {% if user.is_authenticated %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle"
+                                   href="#"
+                                   id="navbarDropdownStaff"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-expanded="false">{{ user.username }} (Staff)</a>
+                                <ul class="dropdown-menu dropdown-menu-end"
+                                    aria-labelledby="navbarDropdownStaff">
+                                    <li>
+                                        <a class="dropdown-item" href="{% url 'home' %}">Public Site</a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <!-- Logout form -->
+                                        <form method="post"
+                                              action="{% url 'logout' %}"
+                                              class="dropdown-item m-0 p-0">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-link dropdown-item">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}">Staff Login</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div class="container">
+            <!-- Display Django messages -->
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                            role="alert">
+                            {{ message }}
+                            <button type="button"
+                                    class="btn-close"
+                                    data-bs-dismiss="alert"
+                                    aria-label="Close"></button>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            <!-- Main content block -->
+            {% block content %}{% endblock %}
+        </div>
+        <!-- Footer with dynamic year -->
+        <footer class="text-center text-muted">
+            <small>&copy; {{ current_year }} Restaurant Booking System</small>
+        </footer>
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
+                xintegrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
                 crossorigin="anonymous"></script>
     </body>
 </html>
