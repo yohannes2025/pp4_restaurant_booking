@@ -182,7 +182,6 @@ class UserBookingFlowIntegrationTest(TestCase):
         available_section = response_after_book_check.content.decode().split(
             "Available Tables:")[-1]
         self.assertNotIn("Table 1", available_section)
-        
         self.client.post(reverse('cancel_booking', args=[
                          booking_to_cancel.id]), follow=True)
         booking_to_cancel.refresh_from_db()

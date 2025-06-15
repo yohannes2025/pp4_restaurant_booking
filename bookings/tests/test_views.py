@@ -369,7 +369,7 @@ class AuthenticatedViewsTest(TestCase):
 
     def test_cancel_booking_POST_too_close_to_time(self):
         """
-        Test cancellation denied if too close 
+        Test cancellation denied if too close
         to reservation time (e.g., within 2 hours).
         """
         # Set future_datetime to be very close, e.g.,
@@ -394,10 +394,9 @@ class AuthenticatedViewsTest(TestCase):
 
         self.booking.refresh_from_db()
         self.assertNotEqual(self.booking.status, 'cancelled')
-
-        expected_message_text = "Bookings cannot be cancelled within 2 hours of the reservation time."
+        expected_message_text = "Bookings cannot be cancelled "
+        "within 2 hours of the reservation time."
         self.assertContains(followed_response, expected_message_text)
-
 
     def test_check_availability_GET(self):
         """

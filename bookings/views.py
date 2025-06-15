@@ -296,8 +296,8 @@ def edit_booking(request, booking_id):
                         booking.save()
                         messages.success(
                             request,
-                            # ADDED SPACE HERE
-                            f"Your booking for Table {selected_table.number} has been updated successfully!"
+                            f"Your booking for Table {selected_table.number} "
+                            f"has been updated successfully!"
                         )
                         return redirect('my_bookings')
                 except Exception as e:
@@ -341,11 +341,14 @@ def cancel_booking(request, booking_id):
     current_time_aware = timezone.now()
     two_hours_from_now = current_time_aware + timedelta(hours=2)
 
-    # Check if cancellation is too close to the booking time (e.g., within 2 hours)
-    if booking_datetime < two_hours_from_now:  # Use the pre-calculated variable
+    # Check if cancellation is too close to the booking time
+    # (e.g., within 2 hours)
+    # Use the pre-calculated variable
+    if booking_datetime < two_hours_from_now:
         messages.error(
             request,
-            "Bookings cannot be cancelled within 2 hours of the reservation time."
+            "Bookings cannot be cancelled within "
+            "2 hours of the reservation time."
         )
         return redirect('my_bookings')
 
@@ -368,7 +371,6 @@ def cancel_booking(request, booking_id):
             request, "Your booking has been successfully cancelled."
         )
         return redirect('my_bookings')
-
 
 
 def check_availability(request):

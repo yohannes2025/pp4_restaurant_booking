@@ -1,0 +1,10 @@
+[flake8]
+# Exclude common directories from linting checks
+exclude =
+    .git,
+    __pycache__,
+    migrations,
+    venv,
+    .venv,
+    *build*,
+    *dist*,
