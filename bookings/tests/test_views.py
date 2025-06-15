@@ -72,11 +72,6 @@ class PublicViewsTest(TestCase):
 
         response = self.client.post(self.url, self.form_data)
 
-        # Print the actual content to debug if needed (remove after fix)
-        # print("\n--- Register POST Failure Response Content ---")
-        # print(response.content.decode())
-        # print("--- End Response Content ---\n")
-
         # Should render the form again
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'registration/register.html')
@@ -84,7 +79,6 @@ class PublicViewsTest(TestCase):
         # THIS IS THE CRITICAL CHANGE: Use assertContains for the error message
         self.assertContains(response, 'The two password fields didn’t match.')
 
-        # You also want to check the message from the messages framework
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
         self.assertEqual(
@@ -375,9 +369,11 @@ class AuthenticatedViewsTest(TestCase):
 
     def test_cancel_booking_POST_too_close_to_time(self):
         """
-        Test cancellation denied if too close to reservation time (e.g., within 2 hours).
+        Test cancellation denied if too close 
+        to reservation time (e.g., within 2 hours).
         """
-        # Set future_datetime to be very close, e.g., 1 hour and 59 minutes from now.
+        # Set future_datetime to be very close, e.g.,
+        # 1 hour and 59 minutes from now.
         # This makes it *definitely* less than 2 hours away.
         future_datetime = timezone.now() + timedelta(hours=1, minutes=59)
 
@@ -391,18 +387,10 @@ class AuthenticatedViewsTest(TestCase):
         )
 
         # --- CRITICAL CHANGE: Pass follow=True directly to client.post() ---
-        # This will execute the POST request, follow the redirect, and
-        # return the final response (the 'my_bookings' page content)
-        # with any messages correctly populated.
         followed_response = self.client.post(
             reverse('cancel_booking', args=[self.booking.id]),
             follow=True  # Automatically follow the redirect
         )
-        # --- END CRITICAL CHANGE ---
-
-        # You don't need to assert status_code 302 or assertRedirects explicitly here,
-        # as `follow=True` takes care of the redirect chain.
-        # If you wanted to check the redirect URL, you could inspect `followed_response.redirect_chain`.
 
         self.booking.refresh_from_db()
         self.assertNotEqual(self.booking.status, 'cancelled')

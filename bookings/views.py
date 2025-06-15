@@ -205,7 +205,7 @@ def my_bookings(request):
 @login_required
 def edit_booking(request, booking_id):
     """
-    Allow users to edit their existing bookings.Ensures booking is
+    Allow users to edit their existing bookings. Ensures booking is
     not in the past and that the updated slot has an available table.
     """
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
@@ -296,8 +296,8 @@ def edit_booking(request, booking_id):
                         booking.save()
                         messages.success(
                             request,
-                            f"Your booking for Table {selected_table.number}"
-                            "has been updated successfully!"
+                            # ADDED SPACE HERE
+                            f"Your booking for Table {selected_table.number} has been updated successfully!"
                         )
                         return redirect('my_bookings')
                 except Exception as e:
@@ -309,7 +309,7 @@ def edit_booking(request, booking_id):
                     request,
                     "No tables available for your requested date, "
                     "time, and number of guests for this edit."
-                    )
+                )
         else:
             messages.error(request, "Please correct the errors in the form.")
     else:

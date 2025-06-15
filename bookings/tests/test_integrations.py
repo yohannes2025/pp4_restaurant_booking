@@ -130,7 +130,8 @@ class UserBookingFlowIntegrationTest(TestCase):
 
     def test_booking_and_availability_check_interplay(self):
         """
-        Tests that booking a table correctly affects availability checks.
+        Tests that booking and *cancelling*
+        a table correctly affects availability checks.
         """
         # Step 1: Check availability for a future slot (should show tables)
         check_date = self.future_date
@@ -143,7 +144,6 @@ class UserBookingFlowIntegrationTest(TestCase):
         response_initial_check = self.client.post(
             reverse('check_availability'), form_data_check)
         self.assertEqual(response_initial_check.status_code, 200)
-        # table1 and table2 available for 2 guests
         self.assertContains(response_initial_check,
                             "Found 2 table(s) available.")
 
@@ -154,15 +154,27 @@ class UserBookingFlowIntegrationTest(TestCase):
             'number_of_guests': 2,
             'notes': 'Booking one table',
         }
-        # No need to follow, just make the booking
-        self.client.post(reverse('make_booking'), form_data_book)
+        # Make the booking and follow the redirect to get the actual booking ID
+        response_make_booking = self.client.post(
+            reverse('make_booking'), form_data_book, follow=True)
+        # Assert that the booking was successful (optional, but good practice)
+        self.assertContains(response_make_booking,
+                            "Your booking for Table 1 has been confirmed!")
+
+        # Retrieve the booking object
+        # (assuming it's the most recent one by the user for this date/time)
+        booking_to_cancel = Booking.objects.get(
+            user=self.user,
+            booking_date=check_date,
+            booking_time=check_time,
+            number_of_guests=2,
+        )
 
         # Step 3: Check availability again for the
         # same slot (should show fewer tables)
         response_after_book_check = self.client.post(
             reverse('check_availability'), form_data_check)
         self.assertEqual(response_after_book_check.status_code, 200)
-        # Only table2 should be available for 2 guests
         self.assertContains(response_after_book_check,
                             "Found 1 table(s) available.")
         self.assertContains(response_after_book_check,
@@ -170,6 +182,11 @@ class UserBookingFlowIntegrationTest(TestCase):
         available_section = response_after_book_check.content.decode().split(
             "Available Tables:")[-1]
         self.assertNotIn("Table 1", available_section)
+        
+        self.client.post(reverse('cancel_booking', args=[
+                         booking_to_cancel.id]), follow=True)
+        booking_to_cancel.refresh_from_db()
+        self.assertEqual(booking_to_cancel.status, 'cancelled')
 
         # Step 4: Check availability one last time
         # (should show tables are available again)
