@@ -331,17 +331,24 @@ def cancel_booking(request, booking_id):
     """
     booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
-    # Prevent cancellation if the booking is
-    # too close to the time (e.g., within 2 hours)
+    # Convert booking datetime to timezone-aware for comparison
     booking_datetime_naive = datetime.combine(
         booking.booking_date, booking.booking_time)
     booking_datetime = timezone.make_aware(
-        booking_datetime_naive)  # Ensure timezone awareness
+        booking_datetime_naive)  # Ensure this is timezone-aware
 
-    if booking_datetime < timezone.now() + timedelta(hours=2):
+    # Get current time, it will be timezone-aware
+    current_time_aware = timezone.now()
+    two_hours_from_now = current_time_aware + timedelta(hours=2)
+
+    # Check if cancellation is too close to the booking time (e.g., within 2 hours)
+    if booking_datetime < two_hours_from_now:  # Use the pre-calculated variable
         messages.error(
-            request, "Bookings cannot be cancelled"
-            " within 2 hours of the reservation time.")
+            request,
+            "Bookings cannot be cancelled within 2 hours of the reservation time."
+        )
+        return redirect('my_bookings')
+
     # Prevent cancelling already finalized bookings
     elif booking.status in ['cancelled', 'completed']:
         messages.warning(
@@ -351,13 +358,17 @@ def cancel_booking(request, booking_id):
                 "Cannot cancel."
             )
         )
+        return redirect('my_bookings')
+
+    # If neither of the above conditions are met, proceed with cancellation
     else:
-        booking.status = 'cancelled'  # Soft delete: set status to cancelled
+        booking.status = 'cancelled'
         booking.save()
         messages.success(
-            request, "Your booking has been successfully cancelled.")
+            request, "Your booking has been successfully cancelled."
+        )
+        return redirect('my_bookings')
 
-    return redirect('my_bookings')
 
 
 def check_availability(request):
