@@ -86,6 +86,8 @@ These results indicate a high level of reliability and code quality for the live
 
 The Lighthouse audit for the **Restaurant Booking Application** delivered impressive results across all categories:
 
+![Lighthouse test](static/screenshots/lighthouse_testing.png)
+
 ### Performance: **100**
 - The application performs exceptionally well, with:
   - Fast load times
