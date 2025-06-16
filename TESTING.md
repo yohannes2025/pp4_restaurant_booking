@@ -126,7 +126,7 @@ These results indicate a high level of reliability and code quality for the live
 
 The Lighthouse audit for the **Restaurant Booking Application** delivered impressive results across all categories:
 
-![Lighthouse test](static/screenshots/lighthouse_testing.png)
+![lighthouse_testing](static/screenshots/lighthouse_testing.png)
 
 ### Performance: **100**
 - The application performs exceptionally well, with:
@@ -239,6 +239,8 @@ All identified bugs were successfully resolved through testing, code review, and
 
 
 # Automated Testing
+
+![automated_tesing](static/screenshots/automated_testing.png)
 
 This project uses a comprehensive suite of automated tests to ensure the reliability, functionality, and robustness of the application. Automated testing is a crucial part of our development process, helping us catch bugs early, prevent new features from breaking existing ones, and ensure everything works as expected.
 
