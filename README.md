@@ -376,7 +376,7 @@ This document outlines the key features of the Restaurant Booking System, design
 **User Registration and Authentication**  
    - Users can create an account and securely log in to access features tailored to their preferences.  
    - Password recovery options are pending for future enhancement for users who forget their login credentials.  
-   ![Registration](static/images/sign_up.png)
+   ![Registration](screenshots/register_tablet.png)
 
 **Check Table Availability**  
    - Users can check for restaurant table availability before they try to book a table.  
