@@ -376,7 +376,7 @@ This document outlines the key features of the Restaurant Booking System, design
 **User Registration and Authentication**  
    - Users can create an account and securely log in to access features tailored to their preferences.  
    - Password recovery options are pending for future enhancement for users who forget their login credentials.  
-   ![Registration](static/images/sign_up.png)
+   ![Registration](static/screenshots/register_tablet.png)
 
 **Check Table Availability**  
    - Users can check for restaurant table availability before they try to book a table.  
@@ -566,7 +566,7 @@ Testing notes for the Restaturant Booking Reservation System Project are contain
 
   A local clone of this repository can be made on GitHub. Please follow the below steps.
   1. Navigate to GitHub and log in.
-  2. The [My Cookbook Repository](https://github.com/EJFleet/pp4-my-cookbook-blog) can be found at this location.
+  2. The [My Restaurant Booking Repository](https://github.com/yohannes2025/pp4_restaurant_booking) can be found at this location.
   3. Above the repository file section, locate the '**Code**' button.
   4. Click on this button and choose your clone method from HTTPS, SSH or GitHub CLI, copy the URL to your clipboard by clicking the '**Copy**' button.
   5. Open your Git Bash Terminal.
