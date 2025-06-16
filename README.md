@@ -497,10 +497,13 @@ This feature aims to give potential customers better context and confidence befo
 This document lists the technologies, frameworks, programming languages, and tools utilized in the development of the Restaurant Booking System.
 
 ---
+
 ## Agile
 
 Agile methodologies were employed throughout development, with an emphasis on iterative progress, continuous feedback, and adaptability to change.
+
 ![kanban board](static/screenshots/kanban_board.png)
+
 ---
 
 ## Frontend Technologies
