@@ -549,6 +549,7 @@ Agile methodologies were employed throughout development, with an emphasis on it
     ![home_tablet](static/wireframes/home_tablet.png)
     ![home_mobile](static/wireframes/home_mobile.png)
 
+
 2. log in page: A simple and centered login form with fields for:
 
     Email or Username
@@ -558,8 +559,9 @@ Agile methodologies were employed throughout development, with an emphasis on it
     ![login_desktop](static/wireframes/login_desktop.png)
     ![login_desktop](static/wireframes/login_tablet.png)
     ![login_desktop](static/wireframes/login_mobile.png)
+   
     
-3. Register page A clean, centered registration form with the following input fields:
+4. Register page A clean, centered registration form with the following input fields:
 
     Username
 
@@ -570,33 +572,38 @@ Agile methodologies were employed throughout development, with an emphasis on it
     ![register_desktop](static/wireframes/register_desktop.png)
     ![register_tablet](static/wireframes/register_tablet.png)
     ![register_mobile](static/wireframes/register_mobile.png)
+   
     
-4. Welcome page
+6. Welcome page
     ![welcome_desktop](static/wireframes/welcome_desktop.png)
     ![welcome_desktop](static/wireframes/welcome_tablet.png)
     ![welcome_desktop](static/wireframes/welcome_mobile.png)
 
-5. Check Table Availability page
+7. Check Table Availability page
     ![availability_desktop](static/wireframes/availability_desktop.png)
     ![availability_desktop](static/wireframes/availability_tablet.png)
     ![availability_desktop](static/wireframes/availability_mobile.png)
+   
 
-6. Make a New Booking page
+9. Make a New Booking page
     ![booking_desktop](static/wireframes/booking_desktop.png)
     ![booking_tablet](static/wireframes/booking_tablet.png)
     ![booking_mobile](static/wireframes/booking_mobile.png)
+   
 
-7. My Bookings page
+11. My Bookings page
     ![bookings_desktop.png](static/wireframes/bookings_desktop.png)
     ![bookings_tablet.png](static/wireframes/bookings_tablet.png)
     ![bookings_mobile.png](static/wireframes/bookings_mobile.png)
+    
 
-8. Staff Dashboard page
+13. Staff Dashboard page
     ![staff_dashboard_desktop](static/wireframes/staff_dashboard_desktop.png)
     ![staff_dashboard_tablet](static/wireframes/staff_dashboard_tablet.png)
     ![staff_dashboard_mobile](static/wireframes/staff_dashboard_mobile.png)
+    
 
-9. all bookings
+15. all bookings
     ![all_bookings_desktop](static/wireframes/all_bookings_desktop.png)
     ![all_bookings_tablet](static/wireframes/all_bookings_tablet.png)
     ![all_bookings_mobile](static/wireframes/all_bookings_mobile.png)
