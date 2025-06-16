@@ -569,9 +569,9 @@ Agile methodologies were employed throughout development, with an emphasis on it
 
     Confirm password
     
-    ![register_desktop](static/wireframes/register_desktop.png)
+
     ![register_tablet](static/wireframes/register_tablet.png)
-    ![register_mobile](static/wireframes/register_mobile.png)
+
    
     
 6. Welcome page
