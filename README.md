@@ -1,47 +1,59 @@
 # Restaurant Booking System
 
-![Home_Page](static/images/home.png)
+![Home_Page](static/home_responsive_page.png)
+
 
 ## CONTENTS
 - [Site Objectives](#site-objectives)
-- [User Experience/UX](#user-experienceux)
-  - [Target Audience](#target-audience)
+- [User Experience/UX](#user-experience/ux)
   - [User Stories](#user-stories)
-    - [New Visitor Goals](#new-visitor-goals)
-    - [Existing Visitor Goals](#existing-visitor-goals)
+- [UX Design](#ux_design)
+  - [1. Project Goal](#1_project_design)
+  - [2. User Personas](#2._user_personas)
+  - [3. Core User Journeys & Flows](#3._core_user_journey)
+  - [4. Key Feature UX Considerations](#4.key_feature_ux_considerations)
 - [Design Choices](#design-choices)
   - [Colour Scheme](#colour-scheme)
   - [Typography](#typography)
-  - [Logo and Favicon](#logo-and-favicon)
-  - [Flow Diagram](#flow-diagram)
-  - [Database Plan](#database-plan)
-- [Features](#features)
-  - [Registration](#registration)
+  - [Database Plan](#database_plan)
+ - [Features](#features)
+  - [For Customers](#for_customers)
+    - [User Registration and Authentication](#user_registration_and_authentication)
+    - [Check Table Availability](#check_table_availability)
+    - [Make a New Booking](#make_a_new_booking)
+    - [My Bookings](#my_bookings)
+  - [For Restaurant Owners, Managers and Staff Members](#for_restaurant_owners_and_staff_members)
+    - [Booking Statistics Cards](#booking_statistics_cards)
+    - [Today’s Confirmed Bookings](#today's_confirmed_bookings)
+    - [Upcoming Active Bookings](#upcoming_active_bookings)
+    - [Total Tables](#total_tables)
+    - [Qick Actions Sections](#quick_actions_section)
   - [Future Features](#future-features)
-  - [Features Not Included](#features-not-included)
 - [Technologies Used](#technologies-used)
-- [Programming Languages, Frameworks and Libraries Used](#programming-languages-frameworks-and-libraries-used)
+    - [Languages](#languages)
+    - [Libraries & Packages](#libraries_&_packages)
+    - [Tools](#tools)
+    - [Agile](#agile)
+    - [Frontend Technologies](#frontend_technologies)
+    - [Backend Technologies](#backend_technologies)
+    - [Development Tools](#development_tools)
+- [Frameworks](#frameworks)
 - [Agile](#agile)
 - [Testing](#testing)
-  - [Manual Testing](#manual-testing)
-  - [User](#user)
-  - [Bugs](#bugs)
-  - [Lighthouse](#lighthouse)
-  - [Validation Testing](#validation-testing)
-    - [HTML & CSS](#html--css)
-  - [Python Testing](#python-testing)
-- [Deployment](#deployment)
-  - [Github Deployment](#github-deployment)
-  - [Creating a Fork or Copying](#creating-a-fork-or-copying)
-  - [Clone](#clone)
-  - [Repository deployment via Heroku](#repository-deployment-via-heroku)
-  - [Deployment of the app](#deployment-of-the-app)
+- [Deployment & Local Development](#deployment_&_local_development)
+  - [Forking the GitHub Repository](#forking_the_github_repository)
+  - [Cloning the GitHub Repository](#cloning_the_github_repository)
+  - [Code Institute PostgreSQL Database](#code_institute_postgreSQL_databases)
+  - [Deployment](#deployment)
+  - [Setting Up](#setting_up)
+  - [Heroku Deployment](#heroku_deployment)
 - [Credits](#credits)
+  - [Code Credits](#code_credits)
 - [Acknowledgments and Thanks](#acknowledgments-and-thanks)
 
 
 ## Site Objectives
-The Restaurant Booking System aims to provide users with an easy and efficient way to book tables at their favorite restaurants. It eliminates the need for direct phone calls and enables customers to manage their bookings effortlessly online, enhancing overall customer satisfaction.
+The Restaurant Booking System aims to provide users with an easy and efficient way to book tables at their favorite restaurant. It eliminates the need for direct phone calls and enables customers to manage their bookings effortlessly online, enhancing overall customer satisfaction.
 *   **Simplify the Reservation Process** – Allow customers to book tables online, view available time slots, and receive instant confirmation.
     
 *   **Improve Restaurant Management** – Help restaurant staff track reservations, manage peak hours, and minimize overbooking.
@@ -50,13 +62,9 @@ The Restaurant Booking System aims to provide users with an easy and efficient w
     
 *   **Optimize Table Utilization** – Ensure better occupancy rates by dynamically managing reservations.
     
-*   **Enable Secure and Efficient Communication** – Send automated confirmation emails, reminders, and notifications to both customers and staff.
-    
-*   **Support Multi-Branch Operations** (if applicable) – Allow users to choose locations if the restaurant has multiple branches.
+*   **Enable Secure and Efficient Communication** – Display automated confirmation , and notifications to both customers and staff.
     
 *   **Integrate with Authentication & User Management** – Enable customer login via **Django Allauth** for a personalized experience.
-    
-*   **Scalability & Deployment** – Ensure smooth deployment on **Heroku**, supporting future scalability.
 
 ## User Experience/UX
 
@@ -78,30 +86,197 @@ The target audience for this application includes:
 - Restaurant owners who want to manage bookings more efficiently.
 - Users who appreciate a seamless online experience for reservations.
 
-**User Stories**
 
-**New Visitor Goals**
+### User Stories
 
-1. **As a new visitor**, I want to easily navigate the website so that I can quickly find a restaurant that meets my preferences.
-2. **As a new visitor**, I want to view detailed information about each restaurant (menu, photos, reviews) so that I can make an informed decision.
-3. **As a new visitor**, I want to create an account quickly and securely so that I can save my preferences for future visits.
-4. **As a new visitor**, I want to receive confirmation of my reservation via email or SMS so that I have a record of it.
-5. **As a new visitor**, I want to see special offers or promotions to take advantage of potential discounts.
+**User Registration and Login**
 
-**Existing Visitor Goals**
+- **As a user**, I can register and create an account so that I can make bookings.
+- **As a user**, I can log in to my account so that I can manage my bookings.
 
-1. **As an existing visitor**, I want to log in to my account easily so that I can access my previous reservations and preferences.
-2. **As an existing visitor**, I want to modify or cancel my reservations without complications to manage my plans effectively.
-3. **As an existing visitor**, I want to receive notifications about upcoming reservations so that I can prepare in advance.
-4. **As an existing visitor**, I want to provide feedback or leave reviews based on my dining experience to help improve the restaurant's service.
-5. **As an existing visitor**, I want to access loyalty rewards and promotions that apply to returning guests to encourage further bookings.
+---
+
+**Table Booking & Management**
+
+**For Customers:**
+
+- **As a user**, I can search for available tables based on date and time.
+- **As a user**, I can select a table and make a reservation.
+- **As a user**, I can view my upcoming and past bookings.
+- **As a user**, I can cancel my bookings.
+
+**For Admins:**
+
+- **As an admin**, I can view all bookings.
+- **As an admin**, I can manage tables (add, edit, delete).
+- **As an admin**, I can confirm or reject bookings.
+
+# UX Design
+
+## 1. Project Goal
+
+To provide a seamless and intuitive online platform for customers to book restaurant tables and for staff to efficiently manage reservations and table resources.
+
+---
+
+## 2. User Personas
+
+### • Persona 1: The Hungry Customer (Primary User)
+
+- **Needs:**
+  - Quick and easy booking process
+  - Clear availability information
+  - Ability to view/manage own bookings
+  - Reliable confirmation
+
+- **Behaviors:**
+  - Often uses mobile
+  - Might check availability spontaneously
+  - Values convenience
+
+- **Goals:**
+  - Secure a table for a specific date/time
+  - Avoid double-bookings
+  - Receive confirmation
+
+### • Persona 2: The Efficient Staff Member (Admin/Manager)
+
+- **Needs:**
+  - Centralized view of all bookings
+  - Quick filters/search
+  - Ability to update booking statuses (confirmed, cancelled, completed)
+  - Manage table inventory
+  - Identify popular times
+
+- **Behaviors:**
+  - Uses desktop for daily operations
+  - Needs quick access to critical information
+  - Requires robust tools
+
+- **Goals:**
+  - Maintain accurate booking records
+  - Optimize table utilization
+  - Respond to customer inquiries about bookings
+  - Ensure smooth service flow
+
+---
+
+## 3. Core User Journeys & Flows
+
+### A. Customer Journey: Making a Booking
+
+1. Customer lands on the homepage.
+2. Clicks **"Make a Booking"** or **"Check Availability"**.
+3. Enters preferred date, time, and number of guests.
+4. System shows available tables or displays a message if none are available.
+5. If satisfied, customer fills out the booking form: date, time, guests, and optional notes.
+6. Form validates input and provides instant feedback on errors.
+7. Clicks **"Find Table & Book"**.
+8. System finds a suitable table and creates the booking.
+9. Displays success message and redirects to **"My Bookings"** page.
+
+### B. Customer Journey: Managing Existing Bookings
+
+1. Customer logs in and navigates to **"My Bookings"**.
+2. Views list of **"Upcoming Bookings"** and **"Past Bookings"**.
+3. Clicks **"Cancel Booking"** on an upcoming booking.
+4. System prompts for confirmation.
+5. If confirmed, booking status changes to "Cancelled", and a success message appears.
+6. Page refreshes to reflect updated status.
+
+### C. Staff Journey: Daily Booking Management
+
+1. Staff logs into the **Staff Portal**.
+2. Sees a dashboard summary of today's confirmed bookings, upcoming bookings, and total tables.
+3. Clicks **"Bookings"** in navigation.
+4. Views a paginated list of all bookings.
+5. Uses filters (status, date) and search (user, table, notes) to find bookings.
+6. Clicks **"View/Edit"** on a booking.
+7. Views details and edits status or adds staff notes.
+8. Changes status (e.g., pending → confirmed) and saves.
+9. Receives **"Booking status updated successfully!"** confirmation.
+
+### D. Staff Journey: Table Management
+
+1. Staff logs into the **Staff Portal**.
+2. Clicks **"Tables"** in navigation.
+3. Views list of all tables.
+4. Uses **"Add New Table"** form to input table number and capacity.
+5. System validates and saves new table.
+6. Edits existing tables using **"Edit"**.
+7. Updates table number or capacity.
+8. Deletes a table using **"Delete"**.
+9. Confirmation dialog appears with warning about associated bookings.
+10. Success or error feedback shown.
+
+---
+
+## 4. Key Feature UX Considerations
+
+### • Homepage
+
+- **Hero Section:** Prominent **"Make a Booking"** button.
+- **Clarity:** Clear message about the restaurant and how to book.
+- **Visual Appeal:** High-quality images, clean layout.
+
+### • Booking Forms (Make & Check Availability)
+
+- **Intuitive Fields:** Date picker, time input, guest selector.
+- **Progressive Disclosure:** Optional fields (like notes) hidden by default.
+- **Immediate Feedback:** Real-time validation for inputs.
+- **Date/Time Constraints:** No past dates; clear messaging for business hours.
+
+### • My Bookings Page
+
+- **Categorization:** Separate "Upcoming" and "Past" bookings.
+- **Key Info:** Visible at a glance (date, time, table, guests, status).
+- **Status Indicators:** Color-coded badges (green: confirmed, yellow: pending, red: cancelled).
+- **Cancellation:** Prominent button with confirmation dialog. Disabled if too close to time or already cancelled.
+
+### • Staff Dashboard
+
+- **At-a-Glance Metrics:** Cards for:
+  - Today's Confirmed Bookings
+  - Upcoming Active Bookings
+  - Total Tables
+- **Quick Links:** From cards to filtered booking lists.
+- **Navigation:** Sidebar or topbar with links to **Bookings** and **Tables**.
+
+### • Staff Booking List
+
+- **Filtering:** By status (Pending, Confirmed, Cancelled, Completed) and date.
+- **Search:** User names, table numbers, notes.
+- **Pagination:** For long lists.
+- **Action Column:** **"View/Edit"** buttons.
+
+### • Staff Table List
+
+- **Add Form:** Always visible for quick addition.
+- **Table Data:** Displayed clearly (number and capacity).
+- **Actions:** **"Edit"** and **"Delete"** buttons.
+- **Deletion Warning:** Confirmation with warning if bookings exist; graceful error if deletion is blocked.
+
+### • Global Messages
+
+- Use Django's `messages` framework for consistent user feedback (success, error, warning alerts).
+
+### • Responsiveness
+
+- Bootstrap 5 grid system and responsive classes for mobile/tablet/desktop support.
+
+### • Accessibility
+
+- **Semantic HTML:** Use appropriate tags (`<nav>`, `<button>`, `<label>`, `<table>`) for screen readers.
+- **Form Labels:** Ensure all inputs are properly labeled.
+- **Keyboard Navigation:** All UI elements must be keyboard accessible.
+- **Color Contrast:** Ensure high contrast between text and background.
 
 
 ## Design Choices
 
 ### Colour Scheme
 
-The chosen color scheme aims to evoke a warm and inviting atmosphere while maintaining clarity and usability. The primary colors are:
+The chosen color scheme aims to evoke a warm and inviting atmosphere while maintaining clarity and usability.
 
 
 ### Typography
@@ -118,171 +293,213 @@ The typography choices focus on readability and aesthetic appeal. The selected f
 
 ### Database Plan
 
-1. **Project Planning & Requirements Gathering**
+**1. User**
 
-* **Dataset Definition:**
+- Based on Django's built-in `User` model.
+- Used for both **customers** and **staff** (differentiated via the `is_staff` flag).
 
-**Tables:**
+---
 
-* + Restaurant: restaurant\_id (INT, PRIMARY KEY, AUTO\_INCREMENT),
-  + restaurant\_name (VARCHAR),
-  + address (VARCHAR), phone\_number (VARCHAR),
-  + Table: table\_id (INT, PRIMARY KEY, AUTO\_INCREMENT),
-  + restaurant\_id (INT, FOREIGN KEY referencing Restaurant),
-  + table\_number (VARCHAR - can be a combination like "Table 1A"),
-  + capacity (INT - number of guests the table can accommodate)
-  + MenuItem: menu\_item\_id (INT, PRIMARY KEY, AUTO\_INCREMENT),
-  + restaurant\_id (INT, FOREIGN KEY referencing Restaurant),
-  + item\_name (VARCHAR),
-  + Booking: booking\_id (INT, PRIMARY KEY, AUTO\_INCREMENT),
-  + restaurant\_id (INT, FOREIGN KEY referencing Restaurant),
-  + user\_id (INT, FOREIGN KEY referencing Django's built-in User model or a custom Customer model – explained below),
-  + table\_id (INT, FOREIGN KEY referencing Table),
-  + booking\_date (DATE),
-  + booking\_time (TIME),
-  + number\_of\_guests (INT),
-  + customer\_name (VARCHAR),
-  + customer\_email (VARCHAR),
-* **Relationships:**
+**2. Table**
 
-Clear one-to-many relationships between Restaurant and Table, Restaurant and MenuItem, Restaurant and Booking, Table and Booking, User and Booking. MenuItem belongs to a Restaurant. Customer has one-to-one relationship with User.
+**Fields:**
+- `id` (Primary Key)
+- `number` (Integer, Unique): Table number
+- `capacity` (Integer): Seating capacity
 
-* **User Roles & Permissions:**
-  + Customer/Guest:
-    - Can view the restaurant's details, menu.
-    - Can make a booking.
-    - Can view and cancel their own bookings.
-  + Restaurant Owner/Manager:
-    - Full access to the site.
-    - Can add, edit, and delete restaurant details (name, address, hours).
-    - Can manage tables (add, edit, delete).
-    - Can manage the menu (add, edit, delete menu items).
-    - Can view and manage all bookings (accept/confirm, cancel, mark as completed, etc.).
-    - Can see reports.
-  + Staff Member (optional ):
-    - Limited access. Can be able to view bookings for the day, mark bookings as completed, but not make changes to the restaurant's settings or the menu.
-* **User Interface (UI) & Features:**
-  + **Customer/Guest-Facing Pages:**
-    - **Home/Landing Page:** Restaurant details (name), contact information.
-    - **Menu Page:** Display the menu items, organized by category.
-    - **Booking Form:**
-      * Date selection (using a date picker).
-      * Time selection (dropdown or time picker – consider business hours).
-      * Number of guests selection.
-      * Table selection (optional).
-      * Customer name, phone number, email (required fields).
-    - **My Bookings Page:** (If user accounts are implemented) List all bookings for the user, with options to view details and cancel.
-  + **UI Considerations:**
-    - **Responsive Design:** Bootstrap is used which is essential for mobile users.
-    - **Calendar/Time Selection:** Appropriate UI widgets used (e.g., a calendar for date selection, a time picker or a time dropdown).
-    - **Clear Information Display:** Ensure that booking information and restaurant details are easy to read and understand.
+**Relationships:**
+- **One-to-Many** with `Booking`  
+  (A single table can have multiple bookings)
 
-1. **Database Design (MySQL or PostgreSQL)**
+---
 
-* **Schema Definition:** (As defined in the Dataset Definition section above)
-  + Tables: Restaurant, Table, MenuItem, Booking, and User (or Customer)
-* **Database Connection:** In settings.py.
-* **ORM (Object-Relational Mapper) and Models (in inventory/models.py ):**
+**3. Booking**
 
-1. **Django Backend Development**
+**Fields:**
+- `id` (Primary Key)
+- `user` (ForeignKey to `User`): Customer who made the booking
+- `table` (ForeignKey to `Table`): Assigned table
+- `booking_date` (Date): Date of reservation
+- `booking_time` (Time): Time slot of reservation
+- `number_of_guests` (Integer)
+- `notes` (Text, Optional): Customer notes
+- `status` (CharField with choices):  
+  - `pending`  
+  - `confirmed`  
+  - `cancelled`  
+  - `completed`
+- `created_at` (DateTime): Timestamp when booking was created
+- `updated_at` (DateTime): Timestamp when booking was last updated
 
-* **Project and App Setup:** Similar to the previous example.
-* **Models (in restaurant/models.py):** (See above)
-* **Admin Interface:** Register models in restaurant/admin.py
-* **Authentication:** Django's built-in authentication. A Package django-allauth has been used
-* **User Roles & Permissions:** The administrator can give permissions to users based on the roles, e.g., can\_manage\_bookings, can\_manage\_menu, can\_view\_restaurant\_details.
+---
+
+**Database Tables**
+
+| Table Name   | Description               | Key Fields                                                        | Relationships                   |
+|--------------|---------------------------|--------------------------------------------------------------------|----------------------------------|
+| `auth_user`  | Django’s built-in user table | `id`, `username`, `email`, `password`, `is_staff`, etc.           | PK for users                     |
+| `table`      | Restaurant tables          | `id`, `number` (unique), `capacity`                                | PK, linked to `booking` table   |
+| `booking`    | Bookings made by users     | `id`, `user_id` (FK), `table_id` (FK), `booking_date`, `booking_time`, `number_of_guests`, `notes`, `status`, `created_at`, `updated_at` | FK to `user` and `table`        |
+
+---
+**Visual ERD Diagram (Textual Representation)**
+![Visual ERD Diagram](static/screenshots/visual_erd_deagram.png)
+
+**Additional Considerations**
+
+
+**Indexes:**
+- Indexes on:
+  - `booking_date`
+  - `booking_time`
+  - `status`
+- Unique index on `table.number` to prevent duplicates
+
+**Constraints:**
+- **Prevent double bookings** by ensuring:
+  - Combination of `booking_date`, `booking_time`, and `table` is unique (enforce via application logic or DB constraint)
+- **ForeignKey behavior**:
+  - Use `on_delete=models.PROTECT` or custom logic to prevent deleting a table that has active bookings
+
 
 
 ## Features
 
-This document outlines the key features of the Restaurant Booking System, designed to enhance user experience for diners, restaurant owners, and managers.
+This document outlines the key features of the Restaurant Booking System, designed to enhance user experience for customers, restaurant owners, and managers.
 
 ---
 
-## Key Features
+### Key Features
 
-### For Diners
+### For Customers
 
-1. **User Registration and Authentication**:
-   - Users can create an account and securely log in to access features tailored to their preferences.
-   - Password recovery options are available for users who forget their login credentials.
-![Registration](static/images/sign_up.png)
+**User Registration and Authentication**  
+   - Users can create an account and securely log in to access features tailored to their preferences.  
+   - Password recovery options are pending for future enhancement for users who forget their login credentials.  
+   ![Registration](static/images/sign_up.png)
+
+**Check Table Availability**  
+   - Users can check for restaurant table availability before they try to book a table.  
+   ![Check table availability](static/screenshots/availability_desktop.png)
+
+**Make a New Booking**  
+   - Users can check for restaurant table availability before they try to book.  
+   ![Make New Booking](static/screenshots/make_booking_desktop.png)
+
+**My Bookings**  
+   - Users can easily see tables for their upcoming and past bookings.  
+   ![My Bookings](static/screenshots/my_bookings_desktop.png)
+
+### For Restaurant Owners, Managers and Staff Members
+
+![Visual ERD Diagram](static/screenshots/staff_dashboard_desktop.png)
+
+***Page Title***
+
+Sets the page title to **"Staff Dashboard"**.
+
+---
+
+***Booking Statistics Cards***
+
+The dashboard displays three summary cards with real-time data:
+
+***day's Confirmed Bookings***
+- Shows the count of all bookings that are **confirmed for the current day**.
+- Includes a quick link to view those bookings filtered by today’s date and status.
+
+***Upcoming Active Bookings***
+- Displays the total number of bookings that are either **pending or confirmed**, and scheduled for today or a future date.
+- Provides buttons to **filter and review** pending or confirmed bookings separately.
+
+***Total Tables***
+- Indicates the **total number of tables** currently available in the system.
+- Includes a link to the **table management** page.
 
 
-2. **Restaurant Search**:
-   - Users can search for restaurants based on various criteria including location, cuisine type, and rating.
-   - Filters to narrow down search results based on price range, distance, and availability.
-![Book_a_table](static/images/book_a_table.png)
+---
+***Qick Actions Sections***
 
-3. **Detailed Restaurant Profiles**:
-   - Each restaurant has a dedicated profile page featuring:
-     - Menu options
-     - Customer reviews and ratings
-     - Contact information
-![My_bookings](static/images/my_bookings.png)
+Offers convenient links for commonly performed staff tasks:
+
+- **Manage All Bookings** – redirects to the full booking list view.
+- **Manage Tables** – opens the table management interface.
+- **Go to Django Admin** – provides a direct link to the Django admin panel (opens in a new tab).
+
+## Future Features
+
+To enhance the user experience and improve the overall functionality of the restaurant booking system, several features are planned for future development:
+
+#### 1. Email and PDF Booking Confirmations
+Customers will receive an automatic **email confirmation** immediately after making a reservation. This confirmation will include all the booking details (date, time, table number, number of guests, and any special notes).  
+Additionally, a **PDF version** of the confirmation** will be attached or made available for download. This provides a printable summary for customers who prefer physical copies or need documentation for events or business purposes.
+
+#### 2. Table Reservation Pricing and Descriptions
+To offer greater transparency, each table will display its **pricing details** (if applicable). For example, premium tables (e.g., window seating or private booths) may carry a small fee, while standard tables remain free.  
+This feature will also include **short descriptions** of each table’s location, capacity, and atmosphere (e.g., “near window,” “quiet corner,” or “ideal for small groups”), helping users make more informed choices during the reservation process.
+
+#### 3. Restaurant Information Page
+A dedicated page will be added to provide comprehensive **information about the restaurant**, including:
+
+- Opening hours and holiday schedules  
+- Menu overview or downloadable menu  
+- Restaurant address with Google Maps integration  
+- Contact information (phone, email, social media links)  
+- Photos of the venue and dining area  
+- Brief history or story of the restaurant  
+
+This feature aims to give potential customers better context and confidence before making a booking.
 
 
-4. **Reservation Management**:
-   - Users can easily book tables for desired dates and times.
-   - Users are allowed to modify or cancel reservations through their profiles.
-   - Confirmation emails and notifications are sent after booking or changes.
+# Technologies Used
 
-5. **User Profiles**:
-   - Users can maintain profiles with personal information, view reservation history, and save favorite restaurants.
-   - Options to provide feedback and leave reviews for dine-in experiences.
 
-6. **Promotions and Discounts**:
-   - Users can access special offers and promotions available at various restaurants.
-   - Loyalty rewards for returning customers to encourage repeat business.
+## Languages
 
-### For Restaurant Owners and Managers
+- [HTML5](https://en.wikipedia.org/wiki/HTML5)
+- [CSS3](https://en.wikipedia.org/wiki/CSS)
+- [JavaScript](https://en.wikipedia.org/wiki/JavaScript)
+- [Python](https://en.wikipedia.org/wiki/Python_(programming_language))
 
-1. **Restaurant Management Dashboard**:
-   - Owners and managers can manage restaurant details, including operating hours, menu items, and pricing.
-   - Analytics dashboard to view reservation statistics, peak times, and customer feedback.
 
-2. **Reservation Handling**:
-   - Monitor real-time reservations and manage table allocations.
-   - Send confirmation emails to customers and manage waiting lists if necessary.
+## Libraries & Packages
+  
+- [Django 4.2.21](https://docs.djangoproject.com/en/4.2/) - The main web framework used to build the application, creating models, views and templates.
+- [Bootstrap 5](https://getbootstrap.com/) - front-end CSS framework for modern responsiveness and pre-built components
+- [Google Fonts](https://fonts.google.com/) - fonts used on the app
+- [django-crispy-forms](https://django-crispy-forms.readthedocs.io/en/latest/) - enhanced form rendering with customizable styles and better integration with Bootstrap
+- [cripsy-bootstrap5](https://github.com/django-crispy-forms/crispy-bootstrap5) - Bootstrap 5 styling support to `django-crispy-forms`
+- [django-allauth](https://django-allauth.readthedocs.io/en/latest/) - user authentication, registration, and account management
+- [Gunicorn](https://gunicorn.org/) - used for WSGI server
+- [psycopg2](https://pypi.org/project/psycopg2/) - PostgreSQL adapter for Python, used to interact with the PostgreSQL database
+- [whitenoise (5.3.0)](https://whitenoise.readthedocs.io/en/latest/) - serving static files in production
 
-3. **Customer Feedback**:
-   - Ability to view and respond to customer reviews.
-   - Insights into customer satisfaction to improve service quality.
 
-4. **Promotions Management**:
-   - Create and manage promotional offers and discounts to attract more diners.
-   - Track the performance of promotions through analytics.
+## Tools
 
-### For Staff Members
+- [Git](https://git-scm.com/) - version control
+- [GitHub](https://github.com/) - save and store the files for the app
+- [GitPod](https://gitpod.io/) - developing the app
+- [Heroku](https://heroku.com/) - deploying the app
+- [PostgreSQL](https://www.postgresql.org/) - database
+- [Balsamiq](https://balsamiq.com/) - wireframes
+- [Am I Responsive](https://ui.dev/amiresponsive) -responsive screenshots
+- [favicon.io](https://favicon.io/) - custom favicon
+- [ChatGPT](https://chatgpt.com/) - AI assisstant for explanation
+- [The W3C Markup Validation Service](https://validator.w3.org/) - validating HTML
+- [The W3C CSS Validation Service](https://jigsaw.w3.org/css-validator/) - validating CSS
+- [Code Insitute PEP8 Validator](https://pep8ci.herokuapp.com/#) - validating the Python code
+- [JSHint](https://jshint.com/) - validating JavaScript
+- [Chrome DevTools](https://developer.chrome.com/docs/devtools/) - during development to log the errors to console.
+- [Django Secret Key Generator](https://djecrety.ir/) - generating a secret key
 
-1. **Staff Login**: 
-   - Waitstaff and hosts can log in to access booking schedules and manage seating arrangements.
-
-2. **Order Management Integration**:
-   - Integrated with order management systems to ensure staff can efficiently manage their workflow during service.
-
-### General Features
-
-1. **Mobile Responsiveness**:
-   - Designed to provide an optimal experience across all devices, including smartphones, tablets, and desktops.
-
-2. **Accessibility Features**:
-   - The application incorporates accessibility standards (WCAG) to ensure it is usable for individuals with disabilities.
-
-3. **Data Security**:
-   - User data is encrypted and appropriately secured to protect personal and payment information.
-
-4. **Contact and Support**:
-   - An integrated support system for users to reach out for help with reservations, technical issues, or inquiries.
-
-## Technologies Used
 
 This document lists the technologies, frameworks, programming languages, and tools utilized in the development of the Restaurant Booking System.
 
 ---
 ## Agile
-Agile methodologies were employed throughout development, with an emphasis on iterative progress, continuous feedback, and adaptability to change. Regular sprint reviews and retrospectives were conducted to refine processes.
-
+Agile methodologies were employed throughout development, with an emphasis on iterative progress, continuous feedback, and adaptability to change.
+![kanban board](static/screenshots/kanban_board.png)
 ---
 
 ## Frontend Technologies
@@ -309,7 +526,7 @@ Agile methodologies were employed throughout development, with an emphasis on it
 
 ---
 
-## Development and Tools
+## Development Tools
 
 1. **Version Control**:
    - **Git**: 
@@ -323,89 +540,208 @@ Agile methodologies were employed throughout development, with an emphasis on it
 
 ---
 
-## Deployment
+# Testing
 
-1. **Heroku** :
-   - A cloud platform used for deploying the application, providing easy scaling and management of server resources.
+Testing notes for the Restaturant Booking Reservation System Project are contained in a separate[TESTING.md](TESTING.md) file.
 
 
-## Testing
-
-The Restaurant Booking System uses the following testing frameworks and tools:
-
-### Django Test Framework:
-  - For unit testing and integration testing in the backend. This is part of Django's built-in testing capabilities.
-  
-### Manual testing:
-  - Each feature was manually tested to ensure functionality and a seamless user experience.
-  
-
- ### Testing Program:
-  - A separate tests.py python program is written for testing Restaurant, Table, Booking creation and validation.No problem was found.
- 
-### User test
-User testing was conducted with a group to receive feedback on usability and overall satisfaction.
-
-### Bugs
-Regular debugging sessions were held, and issues were tracked in the GitHub repository.
-
-### Lighthouse
-Performance audits were conducted using Google Lighthouse, focusing on speed and accessibility.
-
-![Lighthouse_Validation](static/images/Lighthouse.png)
+#  Deployment & Local Development    
 
   
----
+### Forking the GitHub Repository
 
-## Types of Tests
+  A copy of the original repository can be made through GitHub. Please follow the  steps below  to fork this repository.
 
-1. **Unit Tests**:
-   - Tests specific components or functions in isolation to ensure they behave as expected.
-   - Example: Testing model methods, view logic, or utility functions.
 
-2. **Integration Tests**:
-   - Tests the interaction between different components, such as how views interact with models or how API endpoints work with the frontend.
-  
-3. **Functional Tests**:
-   - Tests the application from the user's perspective, simulating user actions and validating end-to-end workflows.
 
-4. **API Tests**:
-   - Specific tests focusing on the API endpoints to verify their correctness, including status codes, response body, and performance.
-  
-5. **Performance Tests**:
-   - These tests check how the application performs under various levels of load.
+  1. Navigate to GitHub and log in.  
+  2. Once logged in, navigate to this repository using this link [My Restaurant Booking Repository](https://github.com/yohannes2025/pp4_restaurant_booking).
+  3. Click the "Fork" button at the top right corner of the repository page.
+  4. Choose where you want to fork the repository (your GitHub account or an organisation you belong to).
+  5. You should now have access to a forked copy of this repository in your Github account.
+
+  -----
+
+### Cloning the GitHub Repository
+
+  A local clone of this repository can be made on GitHub. Please follow the below steps.
+  1. Navigate to GitHub and log in.
+  2. The [My Cookbook Repository](https://github.com/EJFleet/pp4-my-cookbook-blog) can be found at this location.
+  3. Above the repository file section, locate the '**Code**' button.
+  4. Click on this button and choose your clone method from HTTPS, SSH or GitHub CLI, copy the URL to your clipboard by clicking the '**Copy**' button.
+  5. Open your Git Bash Terminal.
+  6. Change the current working directory to the location you want the cloned directory to be made.
+  7. Type `git clone` and paste in the copied URL from step 4.
+  8. Press '**Enter**' for the local clone to be created.
+
+  For more details about forking and cloning a repository, please refer to [GitHub documentation](https://docs.github.com/en/get-started/quickstart/fork-a-repo).
 
 ---
 
+### Code Institute PostgreSQL Database
+
+1. Create an [Code Institute PostgreSQL](https://dbs.ci-dbs.net/manage/) account.
+2. Create a new instance.
+3. Copy the database URL.
+4. Add database to the settings.py-file in Django.
 
 
-### Validation Testing
-#### HTML & CSS
-All HTML and CSS were validated using the W3C Validator to ensure conformance with web standards.
 
-![CSS Validation](static/images/css_validation.png)
+- Add to **env.py** and link up with **settings.py**: ```os.environ["CLOUDINARY_URL"]="cloudinary://...."``` 
+- Set Cloudinary as storage for media and static files in settings.py:
+- ```STATIC_URL = '/static/'```
+```
+  STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'  
+  STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]  
+  STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')‌  
+  MEDIA_URL = '/media/'  
+  DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+```
 
+# Deployment
 
-#### Python Testing
-Unit tests were created using Django's testing framework to validate models and views.
+The Restaurant Booking System web app is deployed via GitHub and Heroku.
 
-## Credits
-Developed by Mebrathu Tekle,yohannes, using open-source resources and libraries.
+The deployed  web app is: [Restaurant Booking System](https://pp4-restaurant-reservations-c439c4476aa0.herokuapp.com/)
 
-
-## Acknowledgments and Thanks
-Special thanks to all Code Institute members especially Tutors, Student Care and my Mentor 
-
-## Deployment
-### Github Deployment
-The project is hosted on GitHub, allowing collaborative development and version control.
-
-### Creating a Fork or Copying
-Users can fork the repository to contribute or create a copy for personal use.
-
-### Clone
-To clone the repository, run:
-```bash
-git clone https://pp4restaurant-booking-system-a622aad68454.herokuapp.com/
+The GitHub Repository containing the code is at: [https://github.com/yohannes2025/pp4_restaurant_booking](https://github.com/yohannes2025/pp4_restaurant_booking)
 
 
+## Setting Up
+
+To set up this project, I installed the necessary libraries and deployed the project to Heroku earlier to ensure the project was working. 
+
+The steps are: 
+
+1. Install Django and necessary libraries and create a Django Project and App.
+2. Configure the project to use Cloudinary and PostgreSQL.
+3. Deploy to Heroku
+
+
+### Set up Details
+
+- Install Django and Create a Project and App
+    
+    In the terminal, type the following commands to install a recommended version of Django and the necessary libraries:
+    
+    ```python
+    **pip3 install 'django<4' gunicorn
+    
+    pip3 install dj_database_url==0.5.0 psycopg2**
+    ```
+    
+    The images for this project will be hosted by Cloudinary. That requires some libraries to be installed. For that we use the following commands: 
+    
+    ```bash
+    pip3 install dj3-cloudinary-storage
+    pip3 install urllib3==1.26.15
+    ```
+    
+    At this stage we can create the requirements.txt file, with the command: 
+    
+    ```bash
+    pip3 freeze --local > requirements.txt
+    ```
+    
+    Create a new Django project and app:
+    
+    ```bash
+    django-admin startproject pp4_restaurant_booking .
+    python3 manage.py startapp bookings
+    ```
+    
+    In the “pp4_restaurant_booking” folder, edit the settings.py to include the new app “bookings”. It is also necessary to update the filed ALLOWED_HOSTS. 
+    
+    The changes now need to be migrated to the data base: `python3 manage.py makemigrations` and `python3 manage.py migrate`
+    
+    To run the server simply type on the terminal `python3 manage.py runserver`
+    
+- Configure Cloudinary, PostgresSQL and Heroku
+    
+    **Cloudinary**
+    
+    Login to [Cloudinary.com](http://Cloudinary.com) and go to Dashboard. There, copy the **API Environment variable** (CLOUDINARY_URL) and the API Secret Key. 
+    
+    **PostgreSQL**
+    
+    In the [ElephantSQL](https://www.elephantsql.com/) dashboard, select: “Create New Instance” and follow the steps.  
+    
+    Then copy the PostgreSQL URL, create a env.py and add the copied URL
+    
+    **env.py and Secret Key**
+    
+    Create an env.py file, and set it up as the code below. Using the URLs mentioned above and a a “Secret Key” you will create. Below there's a sample how the env.py should look like:
+    
+    ```bash
+    import os
+    os.environ["DATABASE_URL"] = "postgres://DATA-BASE-URL"
+    os.environ["SECRET_KEY"] = "CREATE-YOUR-OWN-KEY"
+    os.environ["CLOUDINARY_URL"] = "cloudinary://COUDINARY-ADDRESS"
+    ```
+    
+    This the same  SECRET_KEY is necessary to update settings.py and Heroku.
+    
+    In the settings.py created by Django, import the env.py file and the Secret key. 
+    
+    ```bash
+    from pathlib import Path
+    import os
+    import dj_database_url
+    
+    if os.path.isfile("env.py"):
+        import env
+    ```
+    
+    ```bash
+    SECRET_KEY = 'CREATE-YOUR-OWN-KEY'
+    ```
+    
+
+
+## Heroku Deployment
+
+To deploy the site to Heroku, follow these steps:
+
+1. **Create a Heroku Account.**
+2. **Create a New App:**
+Once you are logged in, click the "New" button located in the top-right corner of the Heroku dashboard. Then, select "Create new app" from the options provided.
+3. **Name Your App:**
+Enter a unique and meaningful name for your app.
+4. **Choose Region and Create App:**
+Select a region that is geographically closer to your target audience. After choosing the region, click "Create app" to set up your new app.
+5. **Add Heroku Postgres:**
+In the Heroku dashboard, navigate to the "Resources" tab. Search for "Heroku Postgres" and choose the "hobby dev" plan. Click "Continue" to provide the database.
+6. **Configure Environment Variables:**
+Go to the "Settings" tab, then click "Reveal Config Vars." Here, add the following environment variables:
+    - **`SECRET_KEY`**: The same Secret Key in the project's env.py.
+    - **`DATABASE_URL`**: The PostgreSQL URL of the instance created for this project.
+    - **`CLOUDINARY_URL`**: The URL for your Cloudinary API.
+7. **Deployment from GitHub:**
+In the Heroku dashboard, go to the "Deploy" tab. Scroll down to "Connect to GitHub" and sign in/authorise your GitHub account when prompted. Then, search for the repository you want to deploy and click "Connect."
+8. **Manual Deployment:**
+After connecting your repository, scroll down to the "Manual deploy" section. Choose the "main" branch (or any other appropriate branch) and click "Deploy" to initiate the deployment process.
+Full details for deploying to Heroku using Git can be found [here](https://devcenter.heroku.com/articles/git).
+-----
+
+# Credits
+---
+
+### Code Credits
+  
+| Source | Notes |
+| --- | --- | 
+|[Code Institute I Think Therefore I Blog walkthrough](https://learn.codeinstitute.net/ci_program/spadvfe2024_9) |An outstanding Django project prototype that greatly influenced the structure of my project.|
+|[Markdown Live Preview](https://markdownlivepreview.com/) | Online Markdown Editor - Dillinger, the Last Markdown Editor ...|
+[Django Web Framework (Python)](https://developer.mozilla.org/en-US/docs/Learn_web_development/Extensions/Server-side/Django/Testing)|Django Tutorial Part 10: Testing a Django web application|
+|[Django Reservation System](https://stackoverflow.com/questions/54932056/django-reservation-system8) |web-based reservation system, for example, for a restaurant |
+|[CI Python Linter](https://pep8ci.herokuapp.com/) | Code Institute Python Linter |
+|[Django Tutorial](https://www.w3schools.com/django/index.php)|Step by step guide on how to install and create a Django project |
+|[Merge images online](https://pinetools.com/merge-images)|Merging home page images for mobile, tablet and computer views|
+|[Django 5 By Example](https://github.com/PacktPublishing/Django-5-By-Example?tab=readme-ov-file)|Build powerful and reliable Python web applications from scratch|
+    
+# Acknowledgments and Thanks
+
+  * My mentor, Jubril Akolade, for his valuable guidance and clear explanations of the assessment criteria throughout each project.
+  * I extend my heartfelt gratitude to the entire Code Institute Student Care Team for their dedication and support in helping me overcome every challenge I encountered throughout the project.
+  * I sincerely thank my friends and family for testing the project on their devices and providing valuable, constructive feedback that helped improve its functionality and user experience.
+  * I thank God for everything—His unwavering guidance, endless grace, and the strength He provides each day. In moments of joy and in times of challenge, His presence remains my greatest blessing. For every breath, every opportunity, and every lesson, I am truly grateful.
