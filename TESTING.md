@@ -1,12 +1,54 @@
 
-- [Testing](#testing)
-  * [Manual Testing](#manual-testing)
-  * [Validator Testing](#validator-testing)
-    + [w3 HTML Validator](#w3-html-validator)
-    + [CSS Validation](#css-validation)
-    + [Python Validation (PEP8)](#python-validation-pep8)
-  * [Lighthouse](#lighthouse)
-  * [Error and Bugs](#error-and-bugs)
+# Content
+
+
+
+## Manual Testing
+
+- [User Authentication](#user-authentication)
+- [Booking Functionality](#booking-functionality)
+- [Navigation and Responsiveness](#navigation-and-responsiveness)
+
+---
+
+## Validator Testing
+
+- [HTML Validation (W3C)](#html-validation-w3c)
+- [CSS Validation (W3C)](#css-validation-w3c)
+- [Python Code Validation (PEP8)](#python-code-validation-pep8)
+
+---
+
+## Lighthouse Test Results
+
+- [Performance Score](#performance-100)
+- [Accessibility Score](#accessibility-95)
+- [Best Practices Score](#best-practices-100)
+- [SEO Score](#seo-90)
+
+---
+
+## Errors and Bugs Encountered
+
+- [Past Date Bookings](#1-booking-in-the-past-allowed)
+- [Double Bookings](#2-double-booking-on-the-same-table-and-time)
+- [Mobile Navigation Issues](#3-navigation-issues-on-mobile-devices)
+- [Last-Minute Cancellation](#4-cancel-booking-too-close-to-time)
+- [Access After Logout](#5-access-to-bookings-after-logout)
+- [Form Field Validation](#6-form-submission-without-required-fields)
+- [Booking Confirmation Display](#7-booking-confirmation-not-displayed)
+- [Flash Message Styling](#8-inconsistent-flash-message-styles)
+- [Linting Issues](#9-validation-warnings-from-linting-tools)
+
+---
+
+## 🧪 Automated Testing
+
+- [How to Run Tests](#how-to-run-tests)
+- [Model Tests](#1-model-tests-bookingsteststest_modelspy)
+- [View Tests](#2-view-tests-bookingsteststest_viewspy)
+- [Form Tests](#3-form-tests-bookingsteststest_formspy)
+
 
 
 
@@ -41,7 +83,7 @@ Navigation links were tested on both desktop and mobile devices. Each link was c
 
 **Result:** ✅ Pass
 
-> 💡 All main user-facing functionalities — including registration, login/logout, booking management, and navigation — were tested manually. The site responded well across various devices and screen resolutions, confirming its responsiveness and functionality.
+> All main user-facing functionalities — including registration, login/logout, booking management, and navigation — were tested manually. The site responded well across various devices and screen resolutions, confirming its responsiveness and functionality.
 
 ---
 
@@ -53,7 +95,7 @@ Navigation links were tested on both desktop and mobile devices. Each link was c
 - Minor initial errors (mostly related to templating or missing attributes) were fixed.
 - Final test results showed **no critical errors** across all key pages.
 
-> ⚠️ *Note:* Due to Django’s templating system, direct HTML validation was not possible in some cases. Therefore, deployed URLs were used for validation.
+> *Note:* Due to Django’s templating system, direct HTML validation was not possible in some cases. Therefore, deployed URLs were used for validation.
 
 ###  CSS Validation (W3C)
 
@@ -79,8 +121,6 @@ Manual and validator testing confirmed that the restaurant booking system:
 These results indicate a high level of reliability and code quality for the live deployment of the project.
 
 
-
->
 
 ## Lighthouse Test Summary
 
