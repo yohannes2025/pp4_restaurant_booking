@@ -1,6 +1,6 @@
 # Restaurant Booking System
 
-![Home_Page](images/home_responsive_page.png)
+![Home_Page](static/images/home_responsive_page.png)
 
 
 ## CONTENTS
