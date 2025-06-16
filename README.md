@@ -498,6 +498,7 @@ This document lists the technologies, frameworks, programming languages, and too
 
 ---
 ## Agile
+
 Agile methodologies were employed throughout development, with an emphasis on iterative progress, continuous feedback, and adaptability to change.
 ![kanban board](static/screenshots/kanban_board.png)
 ---
